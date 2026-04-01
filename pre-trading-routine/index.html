@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pre-Trading Routine — MIKA | Trading Terminal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --cyan:   #00E5FF;
+      --violet: #7C3AED;
+      --gold:   #D4A017;
+      --pink:   #FF2D7B;
+      --bg:     #0A0A14;
+      --bg2:    #0F0F1E;
+      --bg3:    #141428;
+      --white:  #E0E7FF;
+      --slate:  #6B7094;
+      --border: rgba(0,229,255,0.12);
+      --green:  #00C48C;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 48px 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    /* ── PRINT ── */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body::before { position: fixed; }
+      .section { page-break-before: always; break-before: page; }
+      .section-first, .block, .checklist-block, .plan-card { page-break-inside: avoid; break-inside: avoid; }
+      .section-title { page-break-after: avoid; break-after: avoid; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      body { padding: 24px 16px; font-size: 13px; }
+      .header h1 { font-size: 22px; }
+      .header .subtitle { font-size: 13px; }
+      .header .tag { font-size: 9px; letter-spacing: 2px; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .market-grid { grid-template-columns: 1fr; }
+      .plan-grid { grid-template-columns: 1fr; }
+      .time-badges { flex-wrap: wrap; gap: 8px; }
+      .checklist-item { padding: 10px 14px; }
+      .input-row { flex-direction: column; gap: 6px; }
+      .input-row .field-label { width: auto; }
+      .section-title { font-size: 10px; letter-spacing: 2px; }
+      .progress-bar-wrap { display: none; }
+      .stat-row { flex-direction: column; gap: 6px; }
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(212,160,23,0.1);
+      border: 1px solid rgba(212,160,23,0.3);
+      color: var(--gold);
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .header .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+    .header h1 {
+      font-size: 34px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan) 0%, #818CF8 60%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .header .subtitle { color: var(--violet); font-size: 14px; font-weight: 500; }
+    .header .meta { margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--slate); }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── TIMELINE / STEPS ── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+
+    .timeline-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 44px;
+    }
+
+    .timeline-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+      background: var(--bg2);
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline-line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      min-height: 20px;
+    }
+
+    .timeline-item:last-child .timeline-line { display: none; }
+
+    .timeline-body {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      flex: 1;
+      transition: border-color 0.2s;
+    }
+
+    .timeline-body:has(.tl-check:checked) {
+      border-color: rgba(0,196,140,0.3);
+      background: rgba(0,196,140,0.03);
+    }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      gap: 12px;
+    }
+
+    .timeline-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .time-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--cyan);
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.15);
+      padding: 2px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .timeline-desc { font-size: 13px; color: var(--slate); margin-bottom: 8px; }
+
+    .tl-check {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--slate);
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .tl-check:hover { border-color: var(--green); background: rgba(0,196,140,0.05); }
+    .tl-check:checked { background: var(--green); border-color: var(--green); }
+    .tl-check:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--bg);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .progress-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--slate);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .progress-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    .progress-bar-track {
+      height: 6px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      border-radius: 3px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* ── MARKET CHECKLIST ── */
+    .market-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .checklist-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .block-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .block-header.cyan   { background: rgba(0,229,255,0.06); }
+    .block-header.violet { background: rgba(124,58,237,0.08); }
+    .block-header.gold   { background: rgba(212,160,23,0.07); }
+    .block-header.pink   { background: rgba(255,45,123,0.07); }
+    .block-header.green  { background: rgba(0,196,140,0.07); }
+
+    .block-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .block-header.cyan   .block-title { color: var(--cyan); }
+    .block-header.violet .block-title { color: #A78BFA; }
+    .block-header.gold   .block-title { color: var(--gold); }
+    .block-header.pink   .block-title { color: var(--pink); }
+    .block-header.green  .block-title { color: var(--green); }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    .checklist-item:last-child { border-bottom: none; }
+    .checklist-item:hover { background: rgba(255,255,255,0.02); }
+
+    .checklist-item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--slate);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.15s;
+    }
+    .checklist-item input[type="checkbox"]:hover { border-color: var(--cyan); }
+    .checklist-item input[type="checkbox"]:checked { background: var(--cyan); border-color: var(--cyan); }
+    .checklist-item input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--bg);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .item-text { font-size: 13px; color: var(--white); flex: 1; }
+    .item-sub  { font-size: 11px; color: var(--slate); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+
+    /* ── INPUT FIELDS ── */
+    .input-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .input-row:last-child { border-bottom: none; }
+
+    .field-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--slate);
+      width: 180px;
+      flex-shrink: 0;
+    }
+
+    .field-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 3px 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field-input:focus { border-bottom-color: var(--cyan); }
+    .field-input::placeholder { color: var(--slate); opacity: 0.6; }
+
+    .field-select {
+      flex: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 4px 8px;
+      outline: none;
+      cursor: pointer;
+    }
+    .field-select option { background: var(--bg3); }
+
+    /* ── PLAN CARDS ── */
+    .plan-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .plan-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .plan-card-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .plan-card:nth-child(1) .plan-card-header { color: var(--cyan);   background: rgba(0,229,255,0.06); }
+    .plan-card:nth-child(2) .plan-card-header { color: #A78BFA;       background: rgba(124,58,237,0.08); }
+    .plan-card:nth-child(3) .plan-card-header { color: var(--gold);   background: rgba(212,160,23,0.07); }
+
+    .plan-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+
+    .plan-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .plan-field-label {
+      font-size: 10px;
+      color: var(--slate);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .plan-field-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: var(--white);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 2px 4px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    .plan-field-input:focus { border-bottom-color: var(--cyan); }
+    .plan-field-input::placeholder { color: var(--slate); opacity: 0.5; font-size: 11px; }
+
+    /* ── FINAL CONFIRM ── */
+    .confirm-block {
+      background: linear-gradient(135deg, rgba(0,229,255,0.04), rgba(124,58,237,0.06));
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .confirm-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 14px;
+    }
+    .confirm-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .confirm-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .confirm-item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border: 1.5px solid var(--slate);
+      border-radius: 5px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .confirm-item input[type="checkbox"]:checked { background: var(--green); border-color: var(--green); }
+    .confirm-item input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--bg);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 768px) {
+      .confirm-grid { grid-template-columns: 1fr 1fr; }
+      .plan-grid { grid-template-columns: 1fr; }
+      .market-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── READY SIGNAL ── */
+    .ready-signal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .ready-left h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--slate);
+      margin-bottom: 4px;
+    }
+    .ready-status {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--slate);
+      font-family: 'JetBrains Mono', monospace;
+      transition: color 0.3s;
+    }
+    .ready-status.ready { color: var(--green); }
+    .ready-emoji { font-size: 32px; }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-brand { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); font-weight: 600; }
+    .footer-brand span { color: var(--violet); }
+    .footer-note { font-size: 11px; color: var(--slate); text-align: right; }
+    @media (max-width: 768px) {
+      .footer { flex-direction: column; gap: 10px; text-align: center; }
+      .footer-note { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="content">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">👑 VIP RESSOURCES</div>
+    <div class="tag">// MIKA | Trading Terminal — Routine</div>
+    <h1>Pre-Trading Routine</h1>
+    <div class="subtitle">Dein tägliches System bevor du den ersten Trade machst</div>
+    <div class="meta">Version 1.0 • April 2026 • Nur für VIP Member</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-label">// Tagesroutine Fortschritt</span>
+      <span class="progress-count" id="progressCount">0 / 20 erledigt</span>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+  </div>
+
+  <!-- PHASE 1: MORNING PREP -->
+  <div class="section-title">01 // Morgen-Vorbereitung (vor dem Rechner)</div>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-left">
+        <div class="timeline-dot">🌅</div>
+        <div class="timeline-line"></div>
+      </div>
+      <div class="timeline-body">
+        <div class="timeline-header">
+          <span class="timeline-title">Körper & Geist aktivieren</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="time-badge">~15 Min</span>
+            <input type="checkbox" class="tl-check tracker-check">
+          </div>
+        </div>
+        <div class="timeline-desc">Wasser trinken, kurz bewegen oder dehnen. Kein Social Media, keine News in den ersten 10 Minuten nach dem Aufwachen.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-left">
+        <div class="timeline-dot">🧘</div>
+        <div class="timeline-line"></div>
+      </div>
+      <div class="timeline-body">
+        <div class="timeline-header">
+          <span class="timeline-title">Mentaler Check</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="time-badge">~5 Min</span>
+            <input type="checkbox" class="tl-check tracker-check">
+          </div>
+        </div>
+        <div class="timeline-desc">Bin ich heute emotional stabil? Gestern Verluste die mich noch beschäftigen? Bei Score unter 6/10 → nur beobachten, nicht traden.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-left">
+        <div class="timeline-dot">📓</div>
+        <div class="timeline-line"></div>
+      </div>
+      <div class="timeline-body">
+        <div class="timeline-header">
+          <span class="timeline-title">Gestern reviewen</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="time-badge">~5 Min</span>
+            <input type="checkbox" class="tl-check tracker-check">
+          </div>
+        </div>
+        <div class="timeline-desc">Journal vom Vortag lesen. Was lief gut? Was war ein Fehler? Ein Lesson mitnehmen, dann abschließen — kein Rumgrübeln.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PHASE 2: MARKET ANALYSIS -->
+  <div class="section-title">02 // Marktanalyse Checklist</div>
+
+  <div class="market-grid">
+
+    <div class="checklist-block">
+      <div class="block-header cyan">
+        <span style="font-size:16px">₿</span>
+        <span class="block-title">BTC & Marktstruktur</span>
+      </div>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">BTC Tages-Chart analysiert</div><div class="item-sub">Trend, Key Levels, aktuelle Phase</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">BTC Dominance gecheckt</div><div class="item-sub">Steigend = Risk Off / Fallend = Altseason</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Wichtige Support/Resistance notiert</div><div class="item-sub">Max. 3 Key Levels für heute</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Trend auf H4 bestätigt</div><div class="item-sub">Daily und H4 müssen übereinstimmen</div></div>
+      </label>
+    </div>
+
+    <div class="checklist-block">
+      <div class="block-header violet">
+        <span style="font-size:16px">📊</span>
+        <span class="block-title">Sentiment & On-Chain</span>
+      </div>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Fear & Greed Index notiert</div><div class="item-sub">&lt;25 Extreme Fear = Kaufzone / &gt;75 Greed = Vorsicht</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Funding Rate gecheckt</div><div class="item-sub">Stark positiv = Long-Heavy = Vorsicht bei Longs</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Open Interest gecheckt</div><div class="item-sub">Stark steigend mit Preis = Trend bestätigt</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Liquidation Heatmap gecheckt</div><div class="item-sub">Wo liegen große Liquidationen?</div></div>
+      </label>
+    </div>
+
+    <div class="checklist-block">
+      <div class="block-header gold">
+        <span style="font-size:16px">📰</span>
+        <span class="block-title">News & Events</span>
+      </div>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Makro-Kalender gecheckt</div><div class="item-sub">CPI, FOMC, NFP heute oder diese Woche?</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Crypto-spezifische News gescannt</div><div class="item-sub">Hacks, Listings, Delistings, Regulierung</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Social Sentiment gescheckt</div><div class="item-sub">Twitter/X, Telegram — Hype oder Panik?</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Keine High-Impact Events heute?</div><div class="item-sub">Bei großen Events: kleinere Pos. oder kein Trade</div></div>
+      </label>
+    </div>
+
+    <div class="checklist-block">
+      <div class="block-header green">
+        <span style="font-size:16px">💰</span>
+        <span class="block-title">Risk & Konto</span>
+      </div>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Aktuelles Kontostand notiert</div><div class="item-sub">Basis für heutige Positionsgrößen</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Max Daily Loss heute berechnet</div><div class="item-sub">Konto × Risikoprofil % = harter Stop</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Offene Positionen gecheckt</div><div class="item-sub">SL noch aktuell? TP noch sinnvoll?</div></div>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" class="tracker-check">
+        <div><div class="item-text">Wochentarget im Blick</div><div class="item-sub">Wie weit bin ich vom Wochenziel entfernt?</div></div>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- PHASE 3: MARKT DATEN -->
+  <div class="section-title">03 // Heutige Marktdaten festhalten</div>
+
+  <div class="input-block">
+    <div class="input-row">
+      <span class="field-label">BTC Preis</span>
+      <input class="field-input" type="text" placeholder="z.B. $95.400">
+      <span class="field-label" style="text-align:right">BTC Trend</span>
+      <select class="field-select">
+        <option value="">— wählen —</option>
+        <option>📈 Bullisch</option>
+        <option>📉 Bärisch</option>
+        <option>➡️ Seitwärts</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <span class="field-label">Fear & Greed Index</span>
+      <input class="field-input" type="text" placeholder="z.B. 62 — Greed">
+      <span class="field-label" style="text-align:right">Marktphase</span>
+      <select class="field-select">
+        <option value="">— wählen —</option>
+        <option>🟢 Akkumulation</option>
+        <option>🚀 Markup (Uptrend)</option>
+        <option>🔴 Distribution</option>
+        <option>💀 Markdown (Downtrend)</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <span class="field-label">Key Support heute</span>
+      <input class="field-input" type="text" placeholder="z.B. $92.000">
+      <span class="field-label" style="text-align:right">Key Resistance heute</span>
+      <input class="field-input" type="text" placeholder="z.B. $98.500">
+    </div>
+    <div class="input-row">
+      <span class="field-label">Funding Rate</span>
+      <select class="field-select" style="max-width:160px">
+        <option value="">— wählen —</option>
+        <option>🟢 Neutral (0–0.01%)</option>
+        <option>🟡 Positiv (0.01–0.05%)</option>
+        <option>🔴 Sehr positiv (&gt;0.05%)</option>
+        <option>🔵 Negativ</option>
+      </select>
+      <span class="field-label" style="text-align:right">Max Daily Loss heute</span>
+      <input class="field-input" type="text" placeholder="z.B. €150">
+    </div>
+  </div>
+
+  <!-- PHASE 4: TRADE PLAN -->
+  <div class="section-title">04 // Heutiger Trade Plan (max. 3 Setups)</div>
+
+  <div class="plan-grid">
+    <div class="plan-card">
+      <div class="plan-card-header">// Setup 01</div>
+      <div class="plan-card-body">
+        <div class="plan-field"><span class="plan-field-label">Asset</span><input class="plan-field-input" type="text" placeholder="z.B. BTC, ETH, SOL"></div>
+        <div class="plan-field"><span class="plan-field-label">Richtung</span>
+          <select class="plan-field-input" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.08);color:var(--white);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;width:100%;padding:2px 0">
+            <option value="" style="background:var(--bg3)">— Long / Short —</option>
+            <option style="background:var(--bg3)">📈 Long</option>
+            <option style="background:var(--bg3)">📉 Short</option>
+          </select>
+        </div>
+        <div class="plan-field"><span class="plan-field-label">Entry Zone</span><input class="plan-field-input" type="text" placeholder="z.B. $94.800–$95.200"></div>
+        <div class="plan-field"><span class="plan-field-label">Stop Loss</span><input class="plan-field-input" type="text" placeholder="z.B. $93.500"></div>
+        <div class="plan-field"><span class="plan-field-label">Take Profit</span><input class="plan-field-input" type="text" placeholder="z.B. $98.000"></div>
+        <div class="plan-field"><span class="plan-field-label">R:R Ratio</span><input class="plan-field-input" type="text" placeholder="z.B. 1:2.5"></div>
+        <div class="plan-field"><span class="plan-field-label">Begründung</span><input class="plan-field-input" type="text" placeholder="Warum dieser Trade?"></div>
+      </div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-card-header">// Setup 02</div>
+      <div class="plan-card-body">
+        <div class="plan-field"><span class="plan-field-label">Asset</span><input class="plan-field-input" type="text" placeholder="z.B. BTC, ETH, SOL"></div>
+        <div class="plan-field"><span class="plan-field-label">Richtung</span>
+          <select class="plan-field-input" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.08);color:var(--white);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;width:100%;padding:2px 0">
+            <option value="" style="background:var(--bg3)">— Long / Short —</option>
+            <option style="background:var(--bg3)">📈 Long</option>
+            <option style="background:var(--bg3)">📉 Short</option>
+          </select>
+        </div>
+        <div class="plan-field"><span class="plan-field-label">Entry Zone</span><input class="plan-field-input" type="text" placeholder="z.B. $94.800–$95.200"></div>
+        <div class="plan-field"><span class="plan-field-label">Stop Loss</span><input class="plan-field-input" type="text" placeholder="z.B. $93.500"></div>
+        <div class="plan-field"><span class="plan-field-label">Take Profit</span><input class="plan-field-input" type="text" placeholder="z.B. $98.000"></div>
+        <div class="plan-field"><span class="plan-field-label">R:R Ratio</span><input class="plan-field-input" type="text" placeholder="z.B. 1:2.5"></div>
+        <div class="plan-field"><span class="plan-field-label">Begründung</span><input class="plan-field-input" type="text" placeholder="Warum dieser Trade?"></div>
+      </div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-card-header">// Setup 03</div>
+      <div class="plan-card-body">
+        <div class="plan-field"><span class="plan-field-label">Asset</span><input class="plan-field-input" type="text" placeholder="z.B. BTC, ETH, SOL"></div>
+        <div class="plan-field"><span class="plan-field-label">Richtung</span>
+          <select class="plan-field-input" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.08);color:var(--white);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;width:100%;padding:2px 0">
+            <option value="" style="background:var(--bg3)">— Long / Short —</option>
+            <option style="background:var(--bg3)">📈 Long</option>
+            <option style="background:var(--bg3)">📉 Short</option>
+          </select>
+        </div>
+        <div class="plan-field"><span class="plan-field-label">Entry Zone</span><input class="plan-field-input" type="text" placeholder="z.B. $94.800–$95.200"></div>
+        <div class="plan-field"><span class="plan-field-label">Stop Loss</span><input class="plan-field-input" type="text" placeholder="z.B. $93.500"></div>
+        <div class="plan-field"><span class="plan-field-label">Take Profit</span><input class="plan-field-input" type="text" placeholder="z.B. $98.000"></div>
+        <div class="plan-field"><span class="plan-field-label">R:R Ratio</span><input class="plan-field-input" type="text" placeholder="z.B. 1:2.5"></div>
+        <div class="plan-field"><span class="plan-field-label">Begründung</span><input class="plan-field-input" type="text" placeholder="Warum dieser Trade?"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5: FINAL CHECK -->
+  <div class="section-title">05 // Final Confirmation — Bin ich bereit?</div>
+
+  <div class="confirm-block">
+    <div class="confirm-title">// Alle Punkte bestätigen bevor du den ersten Trade öffnest</div>
+    <div class="confirm-grid">
+      <label class="confirm-item"><input type="checkbox" class="tracker-check"><span>Ich kenne meinen Max Daily Loss heute</span></label>
+      <label class="confirm-item"><input type="checkbox" class="tracker-check"><span>Meine Setups sind geplant — kein FOMO-Trading</span></label>
+      <label class="confirm-item"><input type="checkbox" class="tracker-check"><span>SL wird bei jedem Trade sofort gesetzt</span></label>
+      <label class="confirm-item"><input type="checkbox" class="tracker-check"><span>Ich bin emotional stabil (Score ≥ 6/10)</span></label>
+      <label class="confirm-item"><input type="checkbox" class="tracker-check"><span>Keine High-Impact Events die mich überraschen</span></label>
+      <label class="confirm-item"><input type="checkbox" class="tracker-check"><span>Bei Max Daily Loss beende ich den Tag sofort</span></label>
+    </div>
+  </div>
+
+  <div class="ready-signal">
+    <div class="ready-left">
+      <h4>// Trading Status</h4>
+      <div class="ready-status" id="readyStatus">⏳ Routine noch nicht abgeschlossen</div>
+    </div>
+    <div class="ready-emoji" id="readyEmoji">🔒</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">MIKA <span>|</span> Trading Terminal</div>
+    <div class="footer-note">Exklusiv für VIP Member • Nicht zur Weitergabe<br>Version 1.0 • April 2026</div>
+  </div>
+
+</div>
+
+<script>
+  const allChecks = document.querySelectorAll('.tracker-check');
+  const total = allChecks.length;
+  const confirmChecks = document.querySelectorAll('.confirm-block input[type="checkbox"]');
+
+  function update() {
+    const checked = document.querySelectorAll('.tracker-check:checked').length;
+    const confirmedAll = [...confirmChecks].every(c => c.checked);
+
+    // Progress
+    document.getElementById('progressCount').textContent = `${checked} / ${total} erledigt`;
+    document.getElementById('progressBar').style.width = `${(checked / total) * 100}%`;
+
+    // Ready signal
+    const status = document.getElementById('readyStatus');
+    const emoji  = document.getElementById('readyEmoji');
+    if (confirmedAll && checked >= total * 0.8) {
+      status.textContent = '✅ Bereit zum Traden — bleib diszipliniert!';
+      status.classList.add('ready');
+      emoji.textContent = '🚀';
+    } else if (checked >= total * 0.5) {
+      status.textContent = '⚠️ Fast fertig — noch ein paar Punkte offen';
+      status.classList.remove('ready');
+      emoji.textContent = '⏳';
+    } else {
+      status.textContent = '🔒 Routine noch nicht abgeschlossen';
+      status.classList.remove('ready');
+      emoji.textContent = '🔒';
+    }
+  }
+
+  allChecks.forEach(c => c.addEventListener('change', update));
+  update();
+</script>
+</body>
+</html>
