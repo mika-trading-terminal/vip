@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Risk Management Übersicht — MIKA | Trading Terminal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --cyan:   #00E5FF;
+      --violet: #7C3AED;
+      --gold:   #D4A017;
+      --pink:   #FF2D7B;
+      --bg:     #0A0A14;
+      --bg2:    #0F0F1E;
+      --bg3:    #141428;
+      --white:  #E0E7FF;
+      --slate:  #6B7094;
+      --border: rgba(0,229,255,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 48px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── GRID OVERLAY ─────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    /* ── HEADER ───────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--cyan) 0%, #818CF8 60%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .header .subtitle {
+      color: var(--violet);
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .header .meta {
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--slate);
+    }
+
+    /* ── SECTION TITLE ────────────────────────── */
+    .section-title {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── RULE BOX ─────────────────────────────── */
+    .rule-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+
+    .rule-box h3 {
+      color: var(--cyan);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .rule-box ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .rule-box ul li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--white);
+    }
+
+    .rule-box ul li::before {
+      content: '▸';
+      color: var(--violet);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── PROFILE CARDS ────────────────────────── */
+    .profiles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .profile-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .profile-card .card-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-card.konservativ .card-header { background: rgba(0,229,255,0.08); border-bottom: 1px solid rgba(0,229,255,0.15); }
+    .profile-card.moderat     .card-header { background: rgba(124,58,237,0.1);  border-bottom: 1px solid rgba(124,58,237,0.2); }
+    .profile-card.aggressiv   .card-header { background: rgba(255,45,123,0.08); border-bottom: 1px solid rgba(255,45,123,0.15); }
+
+    .profile-card .emoji { font-size: 22px; }
+
+    .profile-card .card-header-text h3 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .profile-card.konservativ h3 { color: var(--cyan); }
+    .profile-card.moderat     h3 { color: #A78BFA; }
+    .profile-card.aggressiv   h3 { color: var(--pink); }
+
+    .profile-card .card-header-text p {
+      font-size: 11px;
+      color: var(--slate);
+      margin-top: 2px;
+    }
+
+    .profile-card .card-body {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .metric:last-child { border-bottom: none; }
+
+    .metric .label {
+      font-size: 12px;
+      color: var(--slate);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric .value {
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .profile-card.konservativ .value { color: var(--cyan); }
+    .profile-card.moderat     .value { color: #A78BFA; }
+    .profile-card.aggressiv   .value { color: var(--pink); }
+
+    /* ── ACCOUNT TABLE ────────────────────────── */
+    .account-table-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: var(--bg3);
+    }
+
+    thead th {
+      padding: 13px 16px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    thead th:first-child { color: var(--white); }
+    thead th.cyan         { color: var(--cyan); }
+    thead th.violet       { color: #A78BFA; }
+    thead th.pink         { color: var(--pink); }
+
+    tbody tr {
+      border-top: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+    tbody td {
+      padding: 13px 16px;
+      font-size: 13px;
+    }
+
+    .account-label {
+      font-weight: 700;
+      color: var(--gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .account-sub {
+      font-size: 10px;
+      color: var(--slate);
+      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    td.cyan   { color: var(--cyan);   font-family: 'JetBrains Mono', monospace; }
+    td.violet { color: #A78BFA;       font-family: 'JetBrains Mono', monospace; }
+    td.pink   { color: var(--pink);   font-family: 'JetBrains Mono', monospace; }
+
+    /* ── FORMULA BOX ──────────────────────────── */
+    .formula-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .formula-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+
+    .formula-card h4 {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--slate);
+      margin-bottom: 12px;
+    }
+
+    .formula {
+      background: var(--bg);
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--cyan);
+      margin-bottom: 10px;
+    }
+
+    .formula-example {
+      font-size: 12px;
+      color: var(--slate);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .formula-example span {
+      color: var(--gold);
+    }
+
+    /* ── WARNING BOX ──────────────────────────── */
+    .warning-box {
+      background: rgba(255,45,123,0.05);
+      border: 1px solid rgba(255,45,123,0.25);
+      border-left: 3px solid var(--pink);
+      border-radius: 8px;
+      padding: 18px 24px;
+      margin-bottom: 32px;
+    }
+
+    .warning-box .warning-title {
+      color: var(--pink);
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .warning-box ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .warning-box ul li {
+      font-size: 13px;
+      color: var(--white);
+      display: flex;
+      gap: 10px;
+    }
+
+    .warning-box ul li::before {
+      content: '⚠';
+      color: var(--pink);
+      flex-shrink: 0;
+    }
+
+    /* ── CHECKLIST ────────────────────────────── */
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .checklist-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+
+    .checklist-card h4 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 14px;
+    }
+
+    .checklist-card.green h4 { color: var(--cyan); }
+    .checklist-card.red   h4 { color: var(--pink); }
+
+    .checklist-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checklist-card ul li {
+      font-size: 13px;
+      color: var(--white);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .checklist-card.green li::before { content: '✓'; color: var(--cyan);   flex-shrink: 0; font-weight: 700; }
+    .checklist-card.red   li::before { content: '✗'; color: var(--pink);   flex-shrink: 0; font-weight: 700; }
+
+    /* ── FOOTER ───────────────────────────────── */
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    .footer-brand span { color: var(--violet); }
+
+    .footer-note {
+      font-size: 11px;
+      color: var(--slate);
+      text-align: right;
+    }
+
+    /* ── PRINT ────────────────────────────────── */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body::before { position: fixed; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      body { padding: 24px 16px; font-size: 13px; }
+
+      .header h1 { font-size: 22px; }
+      .header .subtitle { font-size: 13px; }
+      .header .tag { font-size: 9px; letter-spacing: 2px; }
+
+      /* Profile cards: stack vertically */
+      .profiles { grid-template-columns: 1fr; }
+
+      /* Formula & checklist: stack vertically */
+      .formula-grid { grid-template-columns: 1fr; }
+      .checklist-grid { grid-template-columns: 1fr; }
+
+      /* Table: horizontal scroll on small screens */
+      .account-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table { min-width: 560px; }
+      thead th, tbody td { padding: 10px 10px; font-size: 11px; }
+
+      .rule-box { padding: 16px; }
+      .rule-box ul li { font-size: 13px; }
+      .formula-card { padding: 16px; }
+      .formula { font-size: 11px; padding: 10px 12px; }
+      .formula-example { font-size: 11px; }
+      .checklist-card { padding: 16px; }
+      .warning-box { padding: 14px 16px; }
+      .section-title { font-size: 10px; letter-spacing: 2px; }
+
+      .footer { flex-direction: column; gap: 12px; text-align: center; }
+      .footer-note { text-align: center; }
+    }
+
+    /* Jede Section startet auf neuer Seite */
+    .section {
+      page-break-before: always;
+      break-before: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Erste Section (Goldene Regeln) kein Umbruch davor */
+    .section-first {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Kein Umbruch innerhalb dieser Elemente */
+    .profile-card,
+    .formula-card,
+    .checklist-card,
+    .rule-box,
+    .warning-box,
+    .account-table-wrap,
+    .profiles,
+    .formula-grid,
+    .checklist-grid,
+    .section-title { page-break-inside: avoid; break-inside: avoid; }
+
+    /* Titel nie allein am Seitenende */
+    .section-title { page-break-after: avoid; break-after: avoid; }
+
+    /* ── BADGE ────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(212,160,23,0.1);
+      border: 1px solid rgba(212,160,23,0.3);
+      color: var(--gold);
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="content">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">👑 VIP RESSOURCES</div>
+    <div class="tag">// MIKA | Trading Terminal — Risk Management</div>
+    <h1>Risk Management Übersicht</h1>
+    <div class="subtitle">Kontogrößen × Risikoprofile × Positionsrechner</div>
+    <div class="meta">Version 1.0 • April 2026 • Nur für VIP Member</div>
+  </div>
+
+  <!-- ══ SEITE 1: GOLDENE REGELN ══ -->
+  <div class="section-first">
+    <div class="section-title">01 // Die goldenen Regeln</div>
+    <div class="rule-box">
+      <h3>// Non-Negotiable — gilt für jedes Risikoprofil</h3>
+      <ul>
+        <li>Riskiere niemals mehr als du bereit bist, vollständig zu verlieren — Kapitalerhalt ist Priorität #1</li>
+        <li>Jeder Trade braucht einen definierten Stop-Loss <em>bevor</em> du einsteigst — kein SL, kein Trade</li>
+        <li>Verliere nie mehr als deinen täglichen Max-Loss — danach ist der Trading-Tag beendet, kein Revenge-Trading</li>
+        <li>Das R:R muss mindestens 1:1.5 betragen — du brauchst nur 40% Trefferquote um profitabel zu sein</li>
+        <li>Erhöhe deine Positionsgröße erst, wenn du 3 Monate konstant profitabel bist</li>
+        <li>Drawdown über 20%? Positionsgröße halbieren bis zur Erholung</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══ SEITE 2: RISIKOPROFILE ══ -->
+  <div class="section">
+    <div class="section-title">02 // Risikoprofile</div>
+    <div class="profiles">
+
+      <div class="profile-card konservativ">
+        <div class="card-header">
+          <div class="emoji">🛡️</div>
+          <div class="card-header-text">
+            <h3>Konservativ</h3>
+            <p>Kapitalerhalt zuerst</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="metric"><span class="label">Risk / Trade</span><span class="value">0.5 – 1 %</span></div>
+          <div class="metric"><span class="label">Max Daily Loss</span><span class="value">2 – 3 %</span></div>
+          <div class="metric"><span class="label">Max Drawdown</span><span class="value">8 – 10 %</span></div>
+          <div class="metric"><span class="label">Max Leverage</span><span class="value">3 – 5x</span></div>
+          <div class="metric"><span class="label">Min R:R</span><span class="value">1 : 2</span></div>
+          <div class="metric"><span class="label">Max offene Trades</span><span class="value">2 – 3</span></div>
+          <div class="metric"><span class="label">Geeignet für</span><span class="value" style="font-size:11px">Einsteiger / Kapitalaufbau</span></div>
+        </div>
+      </div>
+
+      <div class="profile-card moderat">
+        <div class="card-header">
+          <div class="emoji">⚖️</div>
+          <div class="card-header-text">
+            <h3>Moderat</h3>
+            <p>Wachstum mit Kontrolle</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="metric"><span class="label">Risk / Trade</span><span class="value">1 – 2 %</span></div>
+          <div class="metric"><span class="label">Max Daily Loss</span><span class="value">4 – 5 %</span></div>
+          <div class="metric"><span class="label">Max Drawdown</span><span class="value">12 – 15 %</span></div>
+          <div class="metric"><span class="label">Max Leverage</span><span class="value">5 – 10x</span></div>
+          <div class="metric"><span class="label">Min R:R</span><span class="value">1 : 2</span></div>
+          <div class="metric"><span class="label">Max offene Trades</span><span class="value">3 – 5</span></div>
+          <div class="metric"><span class="label">Geeignet für</span><span class="value" style="font-size:11px">6+ Monate Erfahrung</span></div>
+        </div>
+      </div>
+
+      <div class="profile-card aggressiv">
+        <div class="card-header">
+          <div class="emoji">🔥</div>
+          <div class="card-header-text">
+            <h3>Aggressiv</h3>
+            <p>High Risk / High Reward</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="metric"><span class="label">Risk / Trade</span><span class="value">2 – 3 %</span></div>
+          <div class="metric"><span class="label">Max Daily Loss</span><span class="value">6 – 8 %</span></div>
+          <div class="metric"><span class="label">Max Drawdown</span><span class="value">15 – 20 %</span></div>
+          <div class="metric"><span class="label">Max Leverage</span><span class="value">10 – 20x</span></div>
+          <div class="metric"><span class="label">Min R:R</span><span class="value">1 : 1.5</span></div>
+          <div class="metric"><span class="label">Max offene Trades</span><span class="value">5 – 7</span></div>
+          <div class="metric"><span class="label">Geeignet für</span><span class="value" style="font-size:11px">Erfahrene Trader</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SEITE 3: KONTOGRÖSSENTABELLE ══ -->
+  <div class="section">
+    <div class="section-title">03 // Kontogrößen — Konkrete Werte</div>
+    <div class="account-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Kontogröße</th>
+            <th class="cyan">🛡 Konservativ (1%)</th>
+            <th class="violet">⚖ Moderat (2%)</th>
+            <th class="pink">🔥 Aggressiv (3%)</th>
+            <th style="color:var(--gold)">Max Daily Loss (5%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="account-label">€ 500</div><div class="account-sub">Starter</div></td>
+            <td class="cyan">€ 5 / Trade</td>
+            <td class="violet">€ 10 / Trade</td>
+            <td class="pink">€ 15 / Trade</td>
+            <td style="color:var(--gold);font-family:'JetBrains Mono',monospace">€ 25 / Tag</td>
+          </tr>
+          <tr>
+            <td><div class="account-label">€ 1.000</div><div class="account-sub">Einsteiger</div></td>
+            <td class="cyan">€ 10 / Trade</td>
+            <td class="violet">€ 20 / Trade</td>
+            <td class="pink">€ 30 / Trade</td>
+            <td style="color:var(--gold);font-family:'JetBrains Mono',monospace">€ 50 / Tag</td>
+          </tr>
+          <tr>
+            <td><div class="account-label">€ 2.500</div><div class="account-sub">Aufbau</div></td>
+            <td class="cyan">€ 25 / Trade</td>
+            <td class="violet">€ 50 / Trade</td>
+            <td class="pink">€ 75 / Trade</td>
+            <td style="color:var(--gold);font-family:'JetBrains Mono',monospace">€ 125 / Tag</td>
+          </tr>
+          <tr>
+            <td><div class="account-label">€ 5.000</div><div class="account-sub">Semi-Pro</div></td>
+            <td class="cyan">€ 50 / Trade</td>
+            <td class="violet">€ 100 / Trade</td>
+            <td class="pink">€ 150 / Trade</td>
+            <td style="color:var(--gold);font-family:'JetBrains Mono',monospace">€ 250 / Tag</td>
+          </tr>
+          <tr>
+            <td><div class="account-label">€ 10.000</div><div class="account-sub">Pro</div></td>
+            <td class="cyan">€ 100 / Trade</td>
+            <td class="violet">€ 200 / Trade</td>
+            <td class="pink">€ 300 / Trade</td>
+            <td style="color:var(--gold);font-family:'JetBrains Mono',monospace">€ 500 / Tag</td>
+          </tr>
+          <tr>
+            <td><div class="account-label">€ 25.000+</div><div class="account-sub">Advanced</div></td>
+            <td class="cyan">€ 250 / Trade</td>
+            <td class="violet">€ 500 / Trade</td>
+            <td class="pink">€ 750 / Trade</td>
+            <td style="color:var(--gold);font-family:'JetBrains Mono',monospace">€ 1.250 / Tag</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SEITE 4: FORMELN ══ -->
+  <div class="section">
+    <div class="section-title">04 // Positionsgröße berechnen</div>
+    <div class="formula-grid">
+
+      <div class="formula-card">
+        <h4>// Positionsgröße (Spot)</h4>
+        <div class="formula">Pos. Größe = (Konto × Risiko%) ÷ (Entry − SL)</div>
+        <div class="formula-example">
+          Konto: <span>€5.000</span> | Risiko: <span>1%</span> = <span>€50</span><br>
+          Entry: <span>€100</span> | SL: <span>€97</span> → Diff: <span>€3</span><br>
+          → Kaufe <span>16.7 Units</span> (€1.670 Positionsgröße)
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h4>// Positionsgröße (Futures)</h4>
+        <div class="formula">Pos. Größe = (Konto × Risiko%) ÷ (SL% × Leverage)</div>
+        <div class="formula-example">
+          Konto: <span>€5.000</span> | Risiko: <span>1%</span> = <span>€50</span><br>
+          SL: <span>2%</span> | Leverage: <span>5x</span><br>
+          → Pos. Größe: <span>€50 ÷ (0.02 × 5) = €500</span>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h4>// Risk:Reward Ratio</h4>
+        <div class="formula">R:R = (TP − Entry) ÷ (Entry − SL)</div>
+        <div class="formula-example">
+          Entry: <span>€100</span> | SL: <span>€97</span> | TP: <span>€106</span><br>
+          R:R = <span>(106−100) ÷ (100−97)</span><br>
+          → R:R = <span>6 ÷ 3 = 1:2</span> ✓
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h4>// Break-Even Trefferquote</h4>
+        <div class="formula">Min. Win-Rate = 1 ÷ (1 + R:R) × 100</div>
+        <div class="formula-example">
+          R:R <span>1:1</span> → mind. <span>50%</span> Win-Rate nötig<br>
+          R:R <span>1:1.5</span> → mind. <span>40%</span> Win-Rate nötig<br>
+          R:R <span>1:2</span> → mind. <span>33%</span> Win-Rate nötig ✓
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SEITE 5: DO's & DON'Ts + FOOTER ══ -->
+  <div class="section">
+    <div class="section-title">05 // Do's &amp; Don'ts</div>
+    <div class="checklist-grid">
+
+      <div class="checklist-card green">
+        <h4>✓ Do's — Best Practice</h4>
+        <ul>
+          <li>SL immer <em>vor</em> dem Einstieg definieren</li>
+          <li>Positionsgröße nach Formel berechnen, nie nach Gefühl</li>
+          <li>Max Daily Loss erreicht? Trading-Tag sofort beenden</li>
+          <li>Gewinne laufen lassen, Verluste schnell abschneiden</li>
+          <li>Jeden Trade im Journal dokumentieren</li>
+          <li>Wöchentliche Review: Was lief gut / schlecht?</li>
+          <li>Mit niedrigem Hebel beginnen, langsam steigern</li>
+          <li>In starken Trends Positionen skalieren (Scale-In)</li>
+        </ul>
+      </div>
+
+      <div class="checklist-card red">
+        <h4>✗ Don'ts — Kapitalvernichter</h4>
+        <ul>
+          <li>Revenge-Trading nach Verlust — emotional = gefährlich</li>
+          <li>SL nachziehen um Verlust zu vermeiden</li>
+          <li>FOMO — einsteigen ohne Setup, nur wegen Preis-Move</li>
+          <li>Overtrading — mehr als Max offene Trades gleichzeitig</li>
+          <li>Auf Signale ohne eigene Analyse blind vertrauen</li>
+          <li>Max Daily Loss ignorieren und weitermachen</li>
+          <li>Zu hoher Hebel bei flüchtigem Markt (>20x)</li>
+          <li>Kapital nachschießen nach Drawdown aus Frust</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="warning-box">
+      <div class="warning-title">⚠ Wichtiger Hinweis</div>
+      <ul>
+        <li>Diese Übersicht ist kein Anlageberater und keine Finanzberatung — sie zeigt bewährte Risk-Management Prinzipien aus der Trading-Community.</li>
+        <li>Trading birgt ein hohes Verlustrisiko. Handle nur mit Kapital, dessen Verlust du dir leisten kannst.</li>
+        <li>Vergangene Performance garantiert keine zukünftigen Ergebnisse. Backteste jede Strategie vor dem Live-Einsatz.</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">MIKA <span>|</span> Trading Terminal</div>
+      <div class="footer-note">
+        Exklusiv für VIP Member • Nicht zur Weitergabe<br>
+        Version 1.0 • April 2026
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

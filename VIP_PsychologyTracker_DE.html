@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trading Psychology & Bias Tracker — MIKA | Trading Terminal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --cyan:   #00E5FF;
+      --violet: #7C3AED;
+      --gold:   #D4A017;
+      --pink:   #FF2D7B;
+      --bg:     #0A0A14;
+      --bg2:    #0F0F1E;
+      --bg3:    #141428;
+      --white:  #E0E7FF;
+      --slate:  #6B7094;
+      --border: rgba(0,229,255,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 48px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    /* ── PRINT ── */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body::before { position: fixed; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      body { padding: 24px 16px; font-size: 13px; }
+
+      .header h1 { font-size: 22px; }
+      .header .subtitle { font-size: 13px; }
+      .header .tag { font-size: 9px; letter-spacing: 2px; }
+
+      .bias-grid { grid-template-columns: 1fr; }
+      .action-grid { grid-template-columns: 1fr; }
+
+      .assessment-table th, .assessment-table td { padding: 8px 10px; }
+      .assessment-table th:first-child,
+      .assessment-table td:first-child { min-width: 120px; }
+      .bias-name-cell { font-size: 12px; }
+      .bias-name-cell span { font-size: 10px; }
+      .check-cell input[type="checkbox"] { width: 18px; height: 18px; }
+
+      .score-legend { flex-direction: column; gap: 8px; padding: 12px 14px; }
+      .legend-item { font-size: 11px; }
+
+      .daily-questions { padding: 12px 14px; gap: 16px; }
+      .daily-q { flex-direction: column; gap: 6px; }
+      .q-answer { width: 100%; }
+
+      .assessment-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+
+      .section-title { font-size: 10px; letter-spacing: 2px; }
+      .intro-box { padding: 16px; font-size: 13px; }
+      .bias-body { padding: 12px 14px; }
+      .bias-header { padding: 12px 14px; }
+      .action-card { padding: 14px 16px; }
+      .quote-text { font-size: 14px; }
+    }
+
+    .section {
+      page-break-before: always;
+      break-before: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .section-first { page-break-inside: avoid; break-inside: avoid; }
+    .section-title { page-break-after: avoid; break-after: avoid; page-break-inside: avoid; break-inside: avoid; }
+    .bias-card, .assessment-block, .rule-box, .warning-box { page-break-inside: avoid; break-inside: avoid; }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+    .header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan) 0%, #818CF8 60%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .header .subtitle { color: var(--violet); font-size: 15px; font-weight: 500; }
+    .header .meta { margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--slate); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(212,160,23,0.1);
+      border: 1px solid rgba(212,160,23,0.3);
+      color: var(--gold);
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── INTRO BOX ── */
+    .intro-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--violet);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--white);
+    }
+    .intro-box strong { color: var(--cyan); }
+
+    /* ── BIAS GRID ── */
+    .bias-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .bias-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .bias-card .bias-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bias-card.fomo    .bias-header { background: rgba(255,45,123,0.07);  border-bottom-color: rgba(255,45,123,0.15); }
+    .bias-card.over    .bias-header { background: rgba(212,160,23,0.07);  border-bottom-color: rgba(212,160,23,0.15); }
+    .bias-card.loss    .bias-header { background: rgba(0,229,255,0.07);   border-bottom-color: rgba(0,229,255,0.15);  }
+    .bias-card.revenge .bias-header { background: rgba(255,45,123,0.07);  border-bottom-color: rgba(255,45,123,0.15); }
+    .bias-card.confirm .bias-header { background: rgba(124,58,237,0.08);  border-bottom-color: rgba(124,58,237,0.15); }
+    .bias-card.anchor  .bias-header { background: rgba(212,160,23,0.07);  border-bottom-color: rgba(212,160,23,0.15); }
+    .bias-card.gambler .bias-header { background: rgba(0,229,255,0.07);   border-bottom-color: rgba(0,229,255,0.15);  }
+    .bias-card.herd    .bias-header { background: rgba(124,58,237,0.08);  border-bottom-color: rgba(124,58,237,0.15); }
+
+    .bias-emoji { font-size: 24px; flex-shrink: 0; }
+
+    .bias-header-text h3 {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .bias-card.fomo    h3, .bias-card.revenge h3 { color: var(--pink); }
+    .bias-card.over    h3, .bias-card.anchor  h3 { color: var(--gold); }
+    .bias-card.loss    h3, .bias-card.gambler h3 { color: var(--cyan); }
+    .bias-card.confirm h3, .bias-card.herd    h3 { color: #A78BFA; }
+
+    .bias-header-text p { font-size: 11px; color: var(--slate); margin-top: 2px; font-style: italic; }
+
+    .bias-body { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+
+    .bias-row { display: flex; flex-direction: column; gap: 3px; }
+    .bias-row .bias-label {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--slate);
+    }
+    .bias-row .bias-text { font-size: 13px; color: var(--white); }
+    .bias-row .bias-fix  { font-size: 13px; color: var(--cyan); }
+
+    .bias-divider { height: 1px; background: rgba(255,255,255,0.04); }
+
+    /* ── SELF ASSESSMENT ── */
+    .assessment-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .assessment-header {
+      background: var(--bg3);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .assessment-header h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .assessment-header .freq-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--slate);
+    }
+
+    .assessment-table { width: 100%; border-collapse: collapse; }
+
+    .assessment-table th {
+      padding: 10px 16px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--slate);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg3);
+    }
+    .assessment-table th.center { text-align: center; }
+
+    .assessment-table td {
+      padding: 11px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .assessment-table tr:last-child td { border-bottom: none; }
+
+    .bias-name-cell { color: var(--white); font-weight: 500; }
+    .bias-name-cell span { display: block; font-size: 11px; color: var(--slate); font-weight: 400; margin-top: 2px; }
+
+    .check-cell { text-align: center; }
+
+    /* ── INTERACTIVE CHECKBOXES ── */
+    .check-cell input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid var(--slate);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      transition: all 0.15s ease;
+      vertical-align: middle;
+    }
+    .check-cell input[type="checkbox"]:hover {
+      border-color: var(--cyan);
+      background: rgba(0,229,255,0.05);
+    }
+    .check-cell input[type="checkbox"]:checked {
+      background: var(--cyan);
+      border-color: var(--cyan);
+    }
+    .check-cell input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--bg);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    /* ── INTERACTIVE TEXT INPUTS ── */
+    .q-answer {
+      width: 200px;
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .q-answer:focus {
+      border-bottom-color: var(--cyan);
+    }
+    .q-answer::placeholder { color: var(--slate); font-size: 11px; }
+
+    /* ── SCORE COUNTER ── */
+    .score-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--slate);
+      color: var(--gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      width: 40px;
+      text-align: center;
+      outline: none;
+      cursor: pointer;
+    }
+    .total-score-input {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--gold);
+      color: var(--gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      width: 50px;
+      text-align: center;
+      outline: none;
+    }
+
+    .score-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .score-never  { color: var(--cyan); }
+    .score-rarely { color: #A78BFA; }
+    .score-often  { color: var(--gold); }
+    .score-always { color: var(--pink); }
+
+    /* ── SCORE LEGEND ── */
+    .score-legend {
+      display: flex;
+      gap: 20px;
+      padding: 14px 20px;
+      background: var(--bg3);
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    /* ── ACTION PLAN ── */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .action-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .action-card h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .action-card.violet-card h4 { color: #A78BFA; }
+    .action-card.cyan-card   h4 { color: var(--cyan); }
+    .action-card.gold-card   h4 { color: var(--gold); }
+    .action-card.pink-card   h4 { color: var(--pink); }
+
+    .action-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .action-card ul li {
+      font-size: 13px;
+      color: var(--white);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .action-card.violet-card li::before { content: '▸'; color: #A78BFA; flex-shrink: 0; }
+    .action-card.cyan-card   li::before { content: '▸'; color: var(--cyan); flex-shrink: 0; }
+    .action-card.gold-card   li::before { content: '▸'; color: var(--gold); flex-shrink: 0; }
+    .action-card.pink-card   li::before { content: '▸'; color: var(--pink); flex-shrink: 0; }
+
+    /* ── DAILY CHECK ── */
+    .daily-check {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .daily-check-header {
+      background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(124,58,237,0.08));
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .daily-check-header h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .daily-questions {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .daily-q {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .q-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--violet);
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 1px;
+      width: 20px;
+    }
+
+    .q-text {
+      font-size: 13px;
+      color: var(--white);
+      flex: 1;
+    }
+
+    .q-answer {
+      width: 200px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      height: 20px;
+    }
+
+    /* ── QUOTE ── */
+    .quote-box {
+      background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(0,229,255,0.05));
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .quote-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--white);
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+    .quote-author {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--violet);
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-brand { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); font-weight: 600; }
+    .footer-brand span { color: var(--violet); }
+    .footer-note { font-size: 11px; color: var(--slate); text-align: right; }
+  </style>
+</head>
+<body>
+<div class="content">
+
+  <!-- ══ HEADER ══ -->
+  <div class="header">
+    <div class="badge">👑 VIP RESSOURCES</div>
+    <div class="tag">// MIKA | Trading Terminal — Psychology</div>
+    <h1>Trading Psychology & Bias Tracker</h1>
+    <div class="subtitle">Erkenne deine Muster • Überwinde deine Schwächen • Trade wie ein Pro</div>
+    <div class="meta">Version 1.0 • April 2026 • Nur für VIP Member</div>
+  </div>
+
+  <!-- ══ SEITE 1: INTRO + BIASES 1-4 ══ -->
+  <div class="section-first">
+
+    <div class="section-title">01 // Warum Psychology wichtiger ist als Strategie</div>
+
+    <div class="intro-box">
+      Studien zeigen: <strong>80% der Trader verlieren nicht wegen schlechter Setups</strong> — sondern wegen emotionaler Entscheidungen.
+      Eine profitable Strategie mit schlechter Psychologie führt zum Verlust. Eine mittelmäßige Strategie mit eiserner Disziplin kann profitabel sein.
+      <br><br>
+      Dieser Tracker hilft dir, deine persönlichen Schwachstellen zu identifizieren, zu verstehen <strong>warum</strong> sie entstehen
+      und konkrete Gegenmaßnahmen zu implementieren — bevor sie dein Konto kosten.
+    </div>
+
+    <div class="section-title">02 // Die 8 gefährlichsten Trading-Biases</div>
+
+    <div class="bias-grid">
+
+      <div class="bias-card fomo">
+        <div class="bias-header">
+          <div class="bias-emoji">😰</div>
+          <div class="bias-header-text">
+            <h3>FOMO</h3>
+            <p>Fear Of Missing Out</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Du steigst in einen Trade ein, weil der Preis bereits stark gestiegen ist und du Angst hast, die Bewegung zu verpassen — ohne eigenes Setup.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">Kauf nach starkem Pump • kein klarer Entry • SL zu weit oder gar nicht gesetzt</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">Regel: Kein Trade ohne vorherigen Plan. Wenn du erst bei +10% einsteigst, bist du Liquidität für andere.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bias-card over">
+        <div class="bias-header">
+          <div class="bias-emoji">🦁</div>
+          <div class="bias-header-text">
+            <h3>Overconfidence</h3>
+            <p>Selbstüberschätzung</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Nach einer Gewinnsträhne glaubst du, den Markt zu "verstehen". Du erhöhst die Positionsgröße, ignorierst Regeln.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">Größere Pos. nach Gewinnen • SL weiter setzen als normal • "Ich weiß was der Markt macht"</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">Positionsgröße bleibt immer gleich — egal nach 5 Gewinnen oder 5 Verlusten. Regeln gelten immer.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bias-card loss">
+        <div class="bias-header">
+          <div class="bias-emoji">💔</div>
+          <div class="bias-header-text">
+            <h3>Loss Aversion</h3>
+            <p>Verlustaversion</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Verluste fühlen sich 2× schlimmer an als gleich große Gewinne gut fühlen. Du hältst Verlierer zu lang und verkaufst Gewinner zu früh.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">SL nicht eingehalten • "Er dreht noch" • TP zu früh genommen aus Angst vor Umkehr</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">SL ist deine Versicherungsprämie, kein Fehler. Kein SL = kein Trade. Automatisiere SL-Orders direkt bei Entry.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bias-card revenge">
+        <div class="bias-header">
+          <div class="bias-emoji">🔥</div>
+          <div class="bias-header-text">
+            <h3>Revenge Trading</h3>
+            <p>Emotionales Nachtraden</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Nach einem Verlust willst du ihn sofort zurückgewinnen. Du tradest impulsiv, ohne Setup, oft mit höherem Risiko.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">Trade sofort nach SL-Hit • höhere Pos. als normal • "Ich hole das zurück"</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">Nach jedem SL: 30 Minuten Pause. Handy weglegen. Max Daily Loss erreicht = Trading-Tag sofort beenden.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SEITE 2: BIASES 5-8 ══ -->
+  <div class="section">
+    <div class="section-title">02 // Die 8 gefährlichsten Trading-Biases (Fortsetzung)</div>
+
+    <div class="bias-grid">
+
+      <div class="bias-card confirm">
+        <div class="bias-header">
+          <div class="bias-emoji">🔍</div>
+          <div class="bias-header-text">
+            <h3>Confirmation Bias</h3>
+            <p>Bestätigungsverzerrung</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Du suchst nur Informationen, die deine bestehende Meinung bestätigen. Gegenargumente werden ignoriert oder abgewertet.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">Nur bullische Charts bei Long-Trade suchen • Warnzeichen ignorieren • "Alle anderen liegen falsch"</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">Vor jedem Trade: Suche aktiv 3 Argumente GEGEN deine Position. Wenn du keinen guten Gegengrund findest, erst dann einsteigen.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bias-card anchor">
+        <div class="bias-header">
+          <div class="bias-emoji">⚓</div>
+          <div class="bias-header-text">
+            <h3>Anchoring Bias</h3>
+            <p>Anker-Effekt</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Du fixierst dich zu stark auf einen bestimmten Preis (z.B. deinen Entry) und triffst darauf basierend irrationale Entscheidungen.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">"Ich verkaufe erst wenn ich wieder im Plus bin" • SL zu nah am Entry wegen Entry-Preis-Fokus</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">Der Markt kennt deinen Entry-Preis nicht. Frage dich: "Würde ich diese Position heute neu eröffnen?" Nein = schließen.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bias-card gambler">
+        <div class="bias-header">
+          <div class="bias-emoji">🎲</div>
+          <div class="bias-header-text">
+            <h3>Gambler's Fallacy</h3>
+            <p>Spielerfehlschluss</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Du glaubst, nach mehreren Verlusten hintereinander "müsse" jetzt ein Gewinn kommen. Die Wahrscheinlichkeit bleibt gleich.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">"Ich habe 3x verloren, jetzt ist ein Win fällig" • Positionsgröße nach Verluststrähne erhöhen</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">Jeder Trade ist unabhängig. Eine Verlustserie ist ein Signal, die Strategie zu reviewen — nicht die Pos. zu erhöhen.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bias-card herd">
+        <div class="bias-header">
+          <div class="bias-emoji">🐑</div>
+          <div class="bias-header-text">
+            <h3>Herd Mentality</h3>
+            <p>Herdenmentalität</p>
+          </div>
+        </div>
+        <div class="bias-body">
+          <div class="bias-row">
+            <span class="bias-label">Was passiert</span>
+            <span class="bias-text">Du tradest wie die Mehrheit — kaufst wenn alle kaufen, verkaufst wenn Panik herrscht. Genau das wollen Market Maker.</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Symptome</span>
+            <span class="bias-text">Trades basierend auf Twitter/Telegram Hype • Kauf bei Euphorie, Verkauf bei Panik</span>
+          </div>
+          <div class="bias-divider"></div>
+          <div class="bias-row">
+            <span class="bias-label">Fix</span>
+            <span class="bias-fix">"Be fearful when others are greedy, greedy when others are fearful." Nutze Fear & Greed Index als Kontraindikator.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SEITE 3: SELF-ASSESSMENT ══ -->
+  <div class="section">
+    <div class="section-title">03 // Dein persönliches Self-Assessment</div>
+
+    <div class="assessment-block">
+      <div class="assessment-header">
+        <h4>// Wie oft zeige ich dieses Verhalten?</h4>
+        <span class="freq-label">Kreuze ehrlich an — niemand außer dir sieht das</span>
+      </div>
+      <table class="assessment-table">
+        <thead>
+          <tr>
+            <th style="width:30%">Bias</th>
+            <th class="center" style="width:14%">Nie<br><span style="color:var(--cyan)">0 Punkte</span></th>
+            <th class="center" style="width:14%">Selten<br><span style="color:#A78BFA">1 Punkt</span></th>
+            <th class="center" style="width:14%">Oft<br><span style="color:var(--gold)">2 Punkte</span></th>
+            <th class="center" style="width:14%">Immer<br><span style="color:var(--pink)">3 Punkte</span></th>
+            <th style="width:14%">Punkte</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="bias-name-cell">😰 FOMO<span>Einsteigen wegen Preis-Move ohne Setup</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="bias-name-cell">🦁 Overconfidence<span>Regeln nach Gewinnsträhne ignorieren</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="bias-name-cell">💔 Loss Aversion<span>SL nicht einhalten / Verlierer halten</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="bias-name-cell">🔥 Revenge Trading<span>Impulsiv nach Verlust nachtraden</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="bias-name-cell">🔍 Confirmation Bias<span>Nur bestätigende Informationen suchen</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="bias-name-cell">⚓ Anchoring<span>Am Entry-Preis festhalten trotz Verlust</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="bias-name-cell">🎲 Gambler's Fallacy<span>Nach Verlusten höher einsteigen</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="bias-name-cell">🐑 Herd Mentality<span>Trades basierend auf Social-Media-Hype</span></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="check-cell"><input type="checkbox"></td>
+            <td class="score-cell"><input class="score-input" type="number" min="0" max="3" placeholder="—"></td>
+          </tr>
+          <tr style="background: var(--bg3);">
+            <td style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cyan); font-weight:700; padding: 12px 16px;">GESAMT-SCORE</td>
+            <td colspan="4" style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--slate); padding: 12px 16px;">Addiere alle Punkte →</td>
+            <td class="score-cell"><input class="total-score-input" type="number" min="0" max="24" placeholder="—"> / 24</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="score-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div><span class="score-never">0 – 4 Punkte: Starke Psychologie</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#A78BFA"></div><span class="score-rarely">5 – 10 Punkte: Solide, Feinschliff nötig</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div><span class="score-often">11 – 17 Punkte: Klarer Verbesserungsbedarf</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div><span class="score-always">18 – 24 Punkte: Psychologie gefährdet dein Konto</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEITE 4: ACTION PLAN + DAILY CHECK ══ -->
+  <div class="section">
+
+    <div class="section-title">04 // Dein persönlicher Action Plan</div>
+
+    <div class="action-grid">
+      <div class="action-card violet-card">
+        <h4>// Score 0–4 · Starke Psychologie</h4>
+        <ul>
+          <li>Weekly Review konsequent durchführen</li>
+          <li>Journaling für weitere Optimierung nutzen</li>
+          <li>Als Mentor für andere Community-Member agieren</li>
+          <li>Fokus auf Strategie-Verfeinerung und Skalierung</li>
+        </ul>
+      </div>
+      <div class="action-card cyan-card">
+        <h4>// Score 5–10 · Feinschliff nötig</h4>
+        <ul>
+          <li>Die 2-3 höchsten Bias-Werte priorisieren</li>
+          <li>Für jeden Bias eine konkrete Regel schreiben</li>
+          <li>Regeln als Checkliste vor jedem Trade durchgehen</li>
+          <li>Assessment monatlich wiederholen</li>
+        </ul>
+      </div>
+      <div class="action-card gold-card">
+        <h4>// Score 11–17 · Verbesserungsbedarf</h4>
+        <ul>
+          <li>Positionsgröße temporär auf 50% reduzieren</li>
+          <li>Jeden Trade im Journal dokumentieren — Pflicht</li>
+          <li>Max Daily Loss auf 2% reduzieren bis Score sinkt</li>
+          <li>Wöchentlich Assessment wiederholen</li>
+        </ul>
+      </div>
+      <div class="action-card pink-card">
+        <h4>// Score 18–24 · Konto in Gefahr</h4>
+        <ul>
+          <li>Sofort auf Demo-Account wechseln für 30 Tage</li>
+          <li>Positionsgröße auf Minimum reduzieren</li>
+          <li>Täglich 10 Min. Trading Psychology lesen/hören</li>
+          <li>Jeden Trade journalisieren und mit Mika besprechen</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-title">05 // Täglicher Psychology-Check (vor dem Trading)</div>
+
+    <div class="daily-check">
+      <div class="daily-check-header">
+        <span style="font-size:18px">🧠</span>
+        <h4>// Bin ich heute im richtigen Mindset zum Traden?</h4>
+      </div>
+      <div class="daily-questions">
+        <div class="daily-q">
+          <span class="q-num">01</span>
+          <span class="q-text">Wie ist mein emotionaler Zustand heute? (1 = sehr schlecht, 10 = perfekt)</span>
+          <input class="q-answer" type="text" placeholder="Deine Antwort...">
+        </div>
+        <div class="daily-q">
+          <span class="q-num">02</span>
+          <span class="q-text">Habe ich gestern Verluste gehabt, die mich heute noch beschäftigen?</span>
+          <input class="q-answer" type="text" placeholder="Deine Antwort...">
+        </div>
+        <div class="daily-q">
+          <span class="q-num">03</span>
+          <span class="q-text">Was ist mein Max-Risk heute in €? (Konto × max. 3%)</span>
+          <input class="q-answer" type="text" placeholder="Deine Antwort...">
+        </div>
+        <div class="daily-q">
+          <span class="q-num">04</span>
+          <span class="q-text">Welchen Bias muss ich heute besonders im Auge behalten?</span>
+          <input class="q-answer" type="text" placeholder="Deine Antwort...">
+        </div>
+        <div class="daily-q">
+          <span class="q-num">05</span>
+          <span class="q-text">Wenn ich heute meinen Max Daily Loss erreiche — was tue ich dann?</span>
+          <input class="q-answer" type="text" placeholder="Deine Antwort...">
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      <div class="quote-text">"The goal of a successful trader is to make the best trades. Money is secondary."</div>
+      <div class="quote-author">— Alexander Elder, Trading for a Living</div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">MIKA <span>|</span> Trading Terminal</div>
+      <div class="footer-note">
+        Exklusiv für VIP Member • Nicht zur Weitergabe<br>
+        Version 1.0 • April 2026
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<script>
+  // Auto-calculate total score from individual bias scores
+  document.querySelectorAll('.score-input').forEach(input => {
+    input.addEventListener('input', calcTotal);
+  });
+
+  function calcTotal() {
+    let total = 0;
+    document.querySelectorAll('.score-input').forEach(input => {
+      const val = parseInt(input.value) || 0;
+      total += Math.min(val, 3);
+    });
+    const totalField = document.querySelector('.total-score-input');
+    if (totalField) totalField.value = total || '';
+
+    // Color feedback
+    if (totalField) {
+      if (total <= 4)       totalField.style.color = '#00E5FF';
+      else if (total <= 10) totalField.style.color = '#A78BFA';
+      else if (total <= 17) totalField.style.color = '#D4A017';
+      else                  totalField.style.color = '#FF2D7B';
+    }
+  }
+
+  // Only allow one checkbox per row (radio-like behavior per row)
+  document.querySelectorAll('.assessment-table tbody tr:not(:last-child)').forEach(row => {
+    const boxes = row.querySelectorAll('input[type="checkbox"]');
+    const scoreInput = row.querySelector('.score-input');
+    const scoreValues = [0, 1, 2, 3];
+
+    boxes.forEach((box, idx) => {
+      box.addEventListener('change', () => {
+        if (box.checked) {
+          boxes.forEach((b, i) => { if (i !== idx) b.checked = false; });
+          if (scoreInput) scoreInput.value = scoreValues[idx];
+        } else {
+          if (scoreInput) scoreInput.value = '';
+        }
+        calcTotal();
+      });
+    });
+  });
+</script>
+</body>
+</html>
