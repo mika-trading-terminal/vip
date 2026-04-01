@@ -668,6 +668,12 @@
 
   </div>
 
+  <!-- QUOTE 1 -->
+  <div style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(0,229,255,0.05));border:1px solid rgba(124,58,237,0.2);border-radius:10px;padding:18px 24px;margin-bottom:28px;text-align:center;">
+    <div style="font-size:15px;font-weight:600;color:var(--white);font-style:italic;margin-bottom:6px">"Trade the plan. Plan the trade. Emotion hat keinen Platz im Cockpit."</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--violet)">— MIKA | Trading Terminal</div>
+  </div>
+
   <!-- PHASE 2: MARKET ANALYSIS -->
   <div class="section-title">02 // Marktanalyse Checklist</div>
 
@@ -699,23 +705,23 @@
     <div class="checklist-block">
       <div class="block-header violet">
         <span style="font-size:16px">📊</span>
-        <span class="block-title">Sentiment & On-Chain</span>
+        <span class="block-title">Altcoins & Volumen</span>
       </div>
       <label class="checklist-item">
         <input type="checkbox" class="tracker-check">
-        <div><div class="item-text">Fear & Greed Index notiert</div><div class="item-sub">&lt;25 Extreme Fear = Kaufzone / &gt;75 Greed = Vorsicht</div></div>
+        <div><div class="item-text">Top Altcoins Performance gecheckt</div><div class="item-sub">ETH, SOL, BNB — outperformen oder underperformen?</div></div>
       </label>
       <label class="checklist-item">
         <input type="checkbox" class="tracker-check">
-        <div><div class="item-text">Funding Rate gecheckt</div><div class="item-sub">Stark positiv = Long-Heavy = Vorsicht bei Longs</div></div>
+        <div><div class="item-text">Gesamtmarkt-Volumen gecheckt</div><div class="item-sub">Hohes Volumen bestätigt Bewegungen</div></div>
       </label>
       <label class="checklist-item">
         <input type="checkbox" class="tracker-check">
-        <div><div class="item-text">Open Interest gecheckt</div><div class="item-sub">Stark steigend mit Preis = Trend bestätigt</div></div>
+        <div><div class="item-text">Watchlist auf Setups geprüft</div><div class="item-sub">Welche Assets zeigen gutes Setup heute?</div></div>
       </label>
       <label class="checklist-item">
         <input type="checkbox" class="tracker-check">
-        <div><div class="item-text">Liquidation Heatmap gecheckt</div><div class="item-sub">Wo liegen große Liquidationen?</div></div>
+        <div><div class="item-text">Keine überhitzten Assets in Watchlist</div><div class="item-sub">Bereits +20% heute = kein guter Entry</div></div>
       </label>
     </div>
 
@@ -783,9 +789,7 @@
       </select>
     </div>
     <div class="input-row">
-      <span class="field-label">Fear & Greed Index</span>
-      <input class="field-input" type="text" placeholder="z.B. 62 — Greed">
-      <span class="field-label" style="text-align:right">Marktphase</span>
+      <span class="field-label">Marktphase</span>
       <select class="field-select">
         <option value="">— wählen —</option>
         <option>🟢 Akkumulation</option>
@@ -793,24 +797,14 @@
         <option>🔴 Distribution</option>
         <option>💀 Markdown (Downtrend)</option>
       </select>
+      <span class="field-label" style="text-align:right">Max Daily Loss heute</span>
+      <input class="field-input" type="text" placeholder="z.B. €150">
     </div>
     <div class="input-row">
       <span class="field-label">Key Support heute</span>
       <input class="field-input" type="text" placeholder="z.B. $92.000">
       <span class="field-label" style="text-align:right">Key Resistance heute</span>
       <input class="field-input" type="text" placeholder="z.B. $98.500">
-    </div>
-    <div class="input-row">
-      <span class="field-label">Funding Rate</span>
-      <select class="field-select" style="max-width:160px">
-        <option value="">— wählen —</option>
-        <option>🟢 Neutral (0–0.01%)</option>
-        <option>🟡 Positiv (0.01–0.05%)</option>
-        <option>🔴 Sehr positiv (&gt;0.05%)</option>
-        <option>🔵 Negativ</option>
-      </select>
-      <span class="field-label" style="text-align:right">Max Daily Loss heute</span>
-      <input class="field-input" type="text" placeholder="z.B. €150">
     </div>
   </div>
 
@@ -872,6 +866,12 @@
         <div class="plan-field"><span class="plan-field-label">Begründung</span><input class="plan-field-input" type="text" placeholder="Warum dieser Trade?"></div>
       </div>
     </div>
+  </div>
+
+  <!-- QUOTE 2 -->
+  <div style="background:linear-gradient(135deg,rgba(212,160,23,0.06),rgba(0,229,255,0.04));border:1px solid rgba(212,160,23,0.2);border-radius:10px;padding:18px 24px;margin-bottom:28px;text-align:center;">
+    <div style="font-size:15px;font-weight:600;color:var(--white);font-style:italic;margin-bottom:6px">"Ein schlechter Tag mit Plan ist besser als ein guter Tag ohne einen."</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold)">— Mark Douglas, Trading in the Zone</div>
   </div>
 
   <!-- PHASE 5: FINAL CHECK -->
