@@ -11,11 +11,9 @@
       --cyan:   #00E5FF;
       --violet: #7C3AED;
       --gold:   #D4A017;
-      --pink:   #FF2D7B;
       --green:  #00FF94;
       --bg:     #0A0A14;
       --bg2:    #0F0F1E;
-      --bg3:    #141428;
       --white:  #E0E7FF;
       --slate:  #6B7094;
       --border: rgba(0,229,255,0.12);
@@ -48,6 +46,7 @@
 
     .content { position: relative; z-index: 1; }
 
+    /* HEADER */
     .header {
       text-align: center;
       margin-bottom: 56px;
@@ -85,6 +84,7 @@
       color: var(--slate);
     }
 
+    /* INTRO */
     .intro-box {
       background: linear-gradient(135deg, rgba(0,229,255,0.05), rgba(124,58,237,0.05));
       border: 1px solid var(--border);
@@ -92,14 +92,11 @@
       padding: 24px 28px;
       margin-bottom: 48px;
     }
-    .intro-box p {
-      color: var(--white);
-      opacity: 0.85;
-      margin-bottom: 8px;
-    }
+    .intro-box p { color: var(--white); opacity: 0.85; margin-bottom: 8px; }
     .intro-box p:last-child { margin-bottom: 0; }
     .intro-box strong { color: var(--cyan); }
 
+    /* SECTION LABEL */
     .section-title {
       font-size: 11px;
       font-family: 'JetBrains Mono', monospace;
@@ -118,12 +115,13 @@
       background: var(--border);
     }
 
+    /* PRACTICE */
     .practice { margin-bottom: 56px; }
     .practice-header {
       display: flex;
       align-items: flex-start;
       gap: 20px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .practice-number {
       font-family: 'JetBrains Mono', monospace;
@@ -145,6 +143,7 @@
       font-size: 13px;
     }
 
+    /* WHEN TAG */
     .when-tag {
       display: inline-flex;
       align-items: center;
@@ -159,7 +158,7 @@
       margin-bottom: 16px;
     }
 
-    /* ── INSTRUCTION BOX ──────────────────────── */
+    /* INSTRUCTION BOX */
     .instruction-box {
       background: rgba(124,58,237,0.06);
       border: 1px solid rgba(124,58,237,0.2);
@@ -183,9 +182,9 @@
       font-size: 13px;
       line-height: 1.8;
     }
-    .instruction-box ol li { margin-bottom: 2px; }
     .instruction-box strong { color: var(--violet); }
 
+    /* PROMPT BLOCK */
     .prompt-block {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -201,7 +200,7 @@
       border-bottom: 1px solid var(--border);
       background: rgba(0,229,255,0.03);
     }
-    .prompt-block-header .prompt-label {
+    .prompt-label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
       color: var(--cyan);
@@ -234,13 +233,14 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
-    .prompt-text .placeholder {
+    .prompt-text .ph {
       color: var(--gold);
       background: rgba(212,160,23,0.1);
       border-radius: 3px;
       padding: 0 3px;
     }
 
+    /* TIP BOX */
     .tip-box {
       background: rgba(0,255,148,0.04);
       border: 1px solid rgba(0,255,148,0.15);
@@ -254,6 +254,7 @@
     }
     .tip-box strong { color: var(--green); }
 
+    /* NON-NEGOTIABLES */
     .rules-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -285,6 +286,7 @@
 <body>
 <div class="content">
 
+  <!-- HEADER -->
   <div class="header">
     <div class="tag">VIP Ressource · AI Toolkit</div>
     <h1>AI Trading Prompts</h1>
@@ -292,12 +294,15 @@
     <div class="meta">claude.ai · copy & paste ready · mika trading terminal</div>
   </div>
 
+  <!-- INTRO -->
   <div class="intro-box">
     <p>Wir leben in einer Zeit in der Zugang zu Daten, Analysen und Wissen noch nie so einfach war. Wer diese Möglichkeiten richtig nutzt, hat einen echten Vorteil — gegenüber denen, die es nicht tun.</p>
-    <p>Die besten Ergebnisse erzielen wir mit <strong>Claude.ai</strong> oder <strong>Claude Code</strong> — du kannst aber auch andere KIs wie ChatGPT oder Gemini verwenden. Passe alle <span style="color:var(--gold)">gelb markierten Felder</span> auf dein eigenes Setup an. Felder ohne Markierung werden von der KI selbst recherchiert.</p>
+    <p>Die besten Ergebnisse erzielen wir mit <strong>Claude.ai</strong> oder <strong>Claude Code</strong> — du kannst aber auch andere KIs wie ChatGPT oder Gemini verwenden. Passe alle <span style="color:var(--gold)">gelb markierten Felder</span> auf dein Setup an. Alle anderen Felder recherchiert die KI selbst.</p>
   </div>
 
-  <!-- ── 01: CUSTOM ALERTS ── -->
+  <!-- ══════════════════════════════════════════
+       01 · CUSTOM TRADINGVIEW ALERTS
+  ══════════════════════════════════════════ -->
   <div class="practice">
     <div class="section-title">Practice 01</div>
     <div class="practice-header">
@@ -308,7 +313,7 @@
       </div>
     </div>
 
-    <div class="when-tag">⏱ Wann: Einmalig einrichten, dann dauerhaft nutzen</div>
+    <div class="when-tag">⏱ Einmalig einrichten · dann dauerhaft nutzen</div>
 
     <div class="instruction-box">
       <div class="instr-title">So verwendest du diesen Prompt</div>
@@ -316,102 +321,202 @@
         <li>Überlege dir <strong>welches Setup</strong> du alertieren willst (z.B. Breakout, Bounce, Crossover)</li>
         <li>Definiere <strong>alle Bedingungen</strong> die gleichzeitig erfüllt sein müssen — je präziser, desto besser</li>
         <li>Lege fest <strong>was visuell</strong> auf dem Chart angezeigt werden soll</li>
-        <li>Kopiere den Prompt, fülle alle <span style="color:var(--gold)">gelben Felder</span> aus und sende ihn an claude.ai</li>
-        <li>Den generierten Code in TradingView → Pine Editor → einfügen → Speichern → Zum Chart hinzufügen</li>
-        <li><strong>Iteriere:</strong> Funktioniert nicht wie erwartet? Beschreibe Claude was falsch ist — er korrigiert es</li>
+        <li>Kopiere den Prompt, fülle alle <span style="color:var(--gold)">gelben Felder</span> aus und sende ihn an die KI</li>
+        <li>Den generierten Code in TradingView → Pine Editor → einfügen → Speichern → Chart hinzufügen</li>
+        <li><strong>Iteriere:</strong> Nicht perfekt? Beschreibe was falsch ist — die KI korrigiert es sofort</li>
       </ol>
     </div>
 
     <div class="prompt-block">
       <div class="prompt-block-header">
-        <span class="prompt-label">Prompt — TradingView Pine Script V6 Alert</span>
+        <span class="prompt-label">Prompt — Pine Script V6 Alert</span>
         <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
       </div>
       <div class="prompt-text">Erstelle einen TradingView Pine Script V6 Indikator und Alert, der auslöst wenn ALLE folgenden Bedingungen gleichzeitig erfüllt sind:
 
-Bedingung 1: <span class="placeholder">[Beschreibe die erste Bedingung — z.B. Preis bricht über ein bestimmtes Level]</span>
+Bedingung 1: <span class="ph">[Beschreibe die erste Bedingung]</span>
 
-Bedingung 2: <span class="placeholder">[Beschreibe die zweite Bedingung — z.B. Volumen-Bestätigung]</span>
+Bedingung 2: <span class="ph">[Beschreibe die zweite Bedingung]</span>
 
-Bedingung 3: <span class="placeholder">[Weitere Bedingung — z.B. Trendfilter, Indikator-Bestätigung]</span>
+Bedingung 3: <span class="ph">[Weitere Bedingung — oder weglassen wenn nicht benötigt]</span>
 
-Zeitfilter: <span class="placeholder">[Optional: Nur innerhalb bestimmter Handelszeiten auslösen]</span>
+Zeitfilter: <span class="ph">[Optional: Nur innerhalb bestimmter Handelszeiten auslösen]</span>
 
 Visuelle Anforderungen:
-- <span class="placeholder">[Was soll auf dem Chart eingezeichnet werden? z.B. Linien, Markierungen, Farben]</span>
+- <span class="ph">[Was soll auf dem Chart angezeigt werden? z.B. Linien, Markierungen, Farben]</span>
 
 Alert-Anforderungen:
 - Alert einmal pro Bar auslösen wenn alle Bedingungen erfüllt sind
 - Alert-Nachricht enthält: Symbol, Preis, Uhrzeit
 
-Code sauber, gut kommentiert und alle Parameter über Inputs anpassbar.</div>
+Code sauber, gut kommentiert, alle Parameter über Inputs anpassbar.</div>
     </div>
 
     <div class="tip-box">
-      <strong>Iteration:</strong> Erster Entwurf nicht perfekt? Schreib einfach: „Ändere Bedingung 2 so, dass…" oder „Füge einen weiteren Filter hinzu: …" — Claude updated das Script in Sekunden. Nie von vorne anfangen.
+      <strong>Iteration:</strong> Erster Entwurf nicht perfekt? Einfach schreiben: „Ändere Bedingung 2 so, dass…" — die KI updated das Script in Sekunden. Nie von vorne anfangen.
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- ── 02: PRE-SESSION GAME PLAN ── -->
+  <!-- ══════════════════════════════════════════
+       02 · PRE-SESSION GAME PLAN
+  ══════════════════════════════════════════ -->
   <div class="practice">
     <div class="section-title">Practice 02</div>
     <div class="practice-header">
       <div class="practice-number">02</div>
       <div class="practice-info">
         <h2>Pre-Session Game Plan</h2>
-        <div class="practice-desc">Professionelle Vorbereitung in unter 5 Minuten täglich</div>
+        <div class="practice-desc">Professionelle Vorbereitung in unter 2 Minuten täglich</div>
       </div>
     </div>
 
-    <div class="when-tag">⏱ Wann: Täglich vor der Trading-Session</div>
+    <div class="when-tag">⏱ Täglich · vor der Trading-Session</div>
 
     <div class="prompt-block">
       <div class="prompt-block-header">
-        <span class="prompt-label">Prompt — Tägliche Watchlist-Analyse (Template)</span>
+        <span class="prompt-label">Prompt — Tägliche Watchlist-Analyse</span>
         <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
       </div>
       <div class="prompt-text">Analysiere diese Watchlist für die heutige Trading-Session.
 
-Watchlist: <span class="placeholder">[BTC, ETH, SOL, ...]</span>
+Watchlist: <span class="ph">[BTC, ETH, SOL, ...]</span>
 
-Bitte recherchiere selbst:
-- Aktuelle Preise, 24h Performance und Handelsvolumen für jeden Titel
+Recherchiere selbst:
+- Aktuelle Preise, 24h Performance und Handelsvolumen
 - Relevante News und Katalysatoren der letzten 24 Stunden
-- Wichtige Support & Resistance Levels aus dem aktuellen Chart
+- Wichtige Support & Resistance Levels
 
-Für jeden Titel analysiere:
+Für jeden Titel:
 - Katalysator oder News-Treiber (falls vorhanden)
-- Aktuelle Kursbewegung: Stärke, Schwäche, Volumen
+- Kursbewegung: Stärke, Schwäche, Volumen
 - Key Levels: Support & Resistance
 - Setup-Potenzial: welche Muster könnten sich entwickeln
-- Priorität: Hoch / Mittel / Niedrig basierend auf Setup-Qualität und Katalysator-Stärke
+- Priorität: Hoch / Mittel / Niedrig
 
 Ausgabeformat:
-Saubere Tabelle, eine Zeile pro Titel, sortiert nach Priorität (höchste zuerst).
+Saubere Tabelle, sortiert nach Priorität (höchste zuerst).
 Danach 2–3 Sätze allgemeiner Marktkontext.</div>
     </div>
 
     <div class="tip-box">
-      <strong>Tipp:</strong> Nur die Watchlist anpassen — den Rest übernimmt die KI. Zeitaufwand: unter 2 Minuten täglich.
+      <strong>Tipp:</strong> Nur die Watchlist anpassen — den Rest übernimmt die KI. Täglich einsatzbereit in unter 2 Minuten.
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- ── 03: TRADE AUTOPSY ── -->
+  <!-- ══════════════════════════════════════════
+       03 · STOP-LOSS, TAKE-PROFIT & POSITION SIZING
+  ══════════════════════════════════════════ -->
   <div class="practice">
     <div class="section-title">Practice 03</div>
     <div class="practice-header">
       <div class="practice-number">03</div>
+      <div class="practice-info">
+        <h2>Stop-Loss, Take-Profit & Position Sizing</h2>
+        <div class="practice-desc">Präzise Levels und optimale Positionsgröße — vor jedem Trade</div>
+      </div>
+    </div>
+
+    <div class="when-tag">⏱ Vor jedem Trade · vor dem Einstieg</div>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-label">Prompt — Trade Kalkulation</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
+      </div>
+      <div class="prompt-text">Berechne Stop-Loss, Take-Profit Levels und die optimale Positionsgröße für folgenden Trade.
+
+Coin / Symbol: <span class="ph">[z.B. BTC, ETH, SOL]</span>
+Einstiegspreis: <span class="ph">[z.B. 85.000 $]</span>
+Richtung: <span class="ph">[Long / Short]</span>
+Kontostand: <span class="ph">[z.B. 10.000 $]</span>
+Maximales Risiko pro Trade: <span class="ph">[z.B. 1% oder 2%]</span>
+Hebel (falls verwendet): <span class="ph">[z.B. 5x — oder "kein Hebel"]</span>
+
+Setup-Kontext (optional aber empfohlen):
+- Nächster starker Support: <span class="ph">[Preis oder "bitte selbst ermitteln"]</span>
+- Nächster starker Widerstand: <span class="ph">[Preis oder "bitte selbst ermitteln"]</span>
+
+Berechne und zeige:
+1. Stop-Loss Level — mit Begründung (technisch sinnvoll, nicht willkürlich)
+2. Take-Profit 1 (konservativ) — erstes realistisches Ziel
+3. Take-Profit 2 (aggressiv) — erweitertes Ziel
+4. Positionsgröße in USD und in Einheiten des Coins
+5. Risiko/Reward Ratio für TP1 und TP2
+6. Maximaler Verlust in USD wenn Stop getroffen wird
+
+Ausgabe: Übersichtliche Tabelle + kurze Begründung für jeden Level.</div>
+    </div>
+
+    <div class="tip-box">
+      <strong>Tipp:</strong> Support & Resistance Levels kannst du selbst eintragen oder die KI darum bitten, sie anhand des aktuellen Charts zu ermitteln. Je mehr Kontext du gibst, desto präziser die Levels.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════
+       04 · MARKT-NARRATIV RADAR
+  ══════════════════════════════════════════ -->
+  <div class="practice">
+    <div class="section-title">Practice 04</div>
+    <div class="practice-header">
+      <div class="practice-number">04</div>
+      <div class="practice-info">
+        <h2>Markt-Narrativ Radar</h2>
+        <div class="practice-desc">Welche Themen bewegen den Markt gerade — und welche Coins profitieren</div>
+      </div>
+    </div>
+
+    <div class="when-tag">⏱ Wöchentlich · Sonntags zur Vorbereitung</div>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-label">Prompt — Narrativ Analyse</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
+      </div>
+      <div class="prompt-text">Erstelle einen aktuellen Markt-Narrativ Report für den Krypto-Markt.
+
+Recherchiere selbst welche Narrativen aktuell Momentum haben (z.B. AI, RWA, DeFi, L2, Gaming, Meme, BTC Ökosystem, Restaking etc.)
+
+Für jedes aktive Narrativ analysiere:
+- Warum hat dieses Narrativ gerade Momentum?
+- Welche Coins führen dieses Narrativ an?
+- Wie stark ist das Momentum (stark / mittel / abflauend)?
+- Gibt es einen konkreten Katalysator (Event, Launch, News)?
+
+Zusätzlich:
+- Welche Narrative haben gerade ihren Höhepunkt überschritten (Vorsicht)?
+- Welche Narrative befinden sich noch in der frühen Phase (Chance)?
+- Was ist das stärkste Einzelnarrativ diese Woche — und warum?
+
+Ausgabe: Strukturierte Tabelle nach Momentum-Stärke sortiert + kurze strategische Einschätzung.</div>
+    </div>
+
+    <div class="tip-box">
+      <strong>Warum das wichtig ist:</strong> Wer das stärkste Narrativ früh erkennt, ist in den richtigen Coins bevor die Masse folgt. Dieser Prompt ersetzt stundenlange Twitter/X Recherche.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════
+       05 · AI TRADE AUTOPSY
+  ══════════════════════════════════════════ -->
+  <div class="practice">
+    <div class="section-title">Practice 05</div>
+    <div class="practice-header">
+      <div class="practice-number">05</div>
       <div class="practice-info">
         <h2>AI Trade Autopsy</h2>
         <div class="practice-desc">Coaching-Level Analyse für jeden Trade — objektiv, kein Ego</div>
       </div>
     </div>
 
-    <div class="when-tag">⏱ Wann: Nach jedem Trade (nach der Session)</div>
+    <div class="when-tag">⏱ Nach jedem Trade · nach der Session</div>
 
     <div class="prompt-block">
       <div class="prompt-block-header">
@@ -420,205 +525,118 @@ Danach 2–3 Sätze allgemeiner Marktkontext.</div>
       </div>
       <div class="prompt-text">Analysiere diesen Trade. Ich hänge einen Chart-Screenshot an.
 
-Setup: <span class="placeholder">[z.B. Breakout, Bounce, Trendfortsetzung]</span>
-Titel: <span class="placeholder">[Symbol]</span>
-Datum: <span class="placeholder">[TT.MM.JJJJ]</span>
-Einstieg: <span class="placeholder">[Preis + Uhrzeit]</span>
-Einstiegslogik: <span class="placeholder">[Warum bist du eingestiegen?]</span>
-Geplanter Ausstieg: <span class="placeholder">[Preis/Bedingung]</span>
-Geplanter Stop: <span class="placeholder">[Preis]</span>
-Tatsächlicher Ausstieg: <span class="placeholder">[Preis + Uhrzeit]</span>
+Setup: <span class="ph">[z.B. Breakout, Bounce, Trendfortsetzung]</span>
+Symbol: <span class="ph">[Coin / Ticker]</span>
+Datum: <span class="ph">[TT.MM.JJJJ]</span>
+Einstieg: <span class="ph">[Preis + Uhrzeit]</span>
+Einstiegslogik: <span class="ph">[Warum bist du eingestiegen?]</span>
+Geplanter Ausstieg: <span class="ph">[Preis / Bedingung]</span>
+Geplanter Stop: <span class="ph">[Preis]</span>
+Tatsächlicher Ausstieg: <span class="ph">[Preis + Uhrzeit]</span>
 
-Meine Einstiegsregeln (Playbook): <span class="placeholder">[deine spezifischen Regeln]</span>
-Meine Ausstiegsregeln (Playbook): <span class="placeholder">[deine spezifischen Regeln]</span>
+Meine Einstiegsregeln: <span class="ph">[deine Regeln]</span>
+Meine Ausstiegsregeln: <span class="ph">[deine Regeln]</span>
 
-Was ist passiert: <span class="placeholder">[Beschreibe was du getan hast und warum]</span>
-Kontext: <span class="placeholder">[z.B. "Das war mein 3. Trade des Tages, die ersten zwei waren Verluste"]</span>
+Was ist passiert: <span class="ph">[Beschreibe was du getan hast und warum]</span>
+Kontext: <span class="ph">[z.B. "3. Trade des Tages, erste zwei waren Verluste"]</span>
 
 Fragen:
-1. Hat mein Einstieg meinen Regeln entsprochen? War er sauber?
+1. Hat mein Einstieg meinen Regeln entsprochen?
 2. Habe ich meinen Ausstiegsplan befolgt? Wenn nicht — was habe ich verletzt?
 3. Welches Muster zeige ich basierend auf dem Chart?
 4. Was sollte ich verbessern?
 5. Was würdest du mir als Coach zu diesem Trade sagen?</div>
     </div>
 
-    <div class="prompt-block" style="margin-top: 16px;">
+    <div class="prompt-block" style="margin-top:16px;">
       <div class="prompt-block-header">
-        <span class="prompt-label">Prompt — Wochen-Auswertung (Super-Prompt)</span>
+        <span class="prompt-label">Prompt — Wochen-Auswertung</span>
         <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
       </div>
-      <div class="prompt-text">Hier sind die Autopsy-Reports aller meiner Trades dieser Woche:
+      <div class="prompt-text">Hier sind alle Autopsy-Reports meiner Trades dieser Woche:
 
-<span class="placeholder">[Alle einzelnen Autopsy-Reports einfügen — nicht cherry-picken, alle nehmen]</span>
+<span class="ph">[Alle einzelnen Reports einfügen — nicht cherry-picken, alle nehmen]</span>
 
-Ich habe folgende Fehler selbst beobachtet: <span class="placeholder">[deine eigenen Beobachtungen]</span>
-Ich arbeite gerade an: <span class="placeholder">[z.B. "frühem Ausstieg aus Angst"]</span>
+Selbst beobachtete Fehler: <span class="ph">[deine eigenen Beobachtungen]</span>
+Ich arbeite gerade an: <span class="ph">[z.B. "frühem Ausstieg aus Angst"]</span>
 
 Bitte:
-1. Identifiziere Trends und Muster über alle Trades dieser Woche
+1. Identifiziere Trends und Muster über alle Trades
 2. Erkenne Zusammenhänge die ich selbst nicht sehe
-3. Nenne die EINE wichtigste Sache auf die ich mich nächste Woche fokussieren soll
-4. Konkrete, umsetzbare Empfehlung — nicht mehrere Dinge gleichzeitig</div>
+3. Nenne die EINE wichtigste Sache für nächste Woche
+4. Formuliere sie als konkreten, messbaren Fokus-Satz</div>
     </div>
 
     <div class="tip-box">
-      <strong>Der Unterschied:</strong> Kein Ego, kein Bias. Nur: hier ist was du getan hast, hier sind die Regeln die du verletzt hast, hier ist das Muster, hier ist der Fix.
+      <strong>Der Unterschied:</strong> Kein Ego, kein Bias. Nur: hier ist was du getan hast — hier sind die Regeln die du verletzt hast — hier ist das Muster — hier ist der Fix.
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- ── 04: MARKTSTRUKTUR & SENTIMENT ── -->
+  <!-- ══════════════════════════════════════════
+       06 · ALTCOIN DUE DILIGENCE
+  ══════════════════════════════════════════ -->
   <div class="practice">
-    <div class="section-title">Krypto · Practice 04</div>
+    <div class="section-title">Practice 06</div>
     <div class="practice-header">
-      <div class="practice-number">04</div>
+      <div class="practice-number">06</div>
       <div class="practice-info">
-        <h2>Marktstruktur & Sentiment Analyse</h2>
-        <div class="practice-desc">Den Gesamtmarkt verstehen bevor du einen Trade eingehst</div>
+        <h2>Altcoin Due Diligence</h2>
+        <div class="practice-desc">Vor jedem neuen Coin — strukturiert recherchieren statt blind einsteigen</div>
       </div>
     </div>
 
-    <div class="when-tag">⏱ Wann: Sonntags zur Wochenvorbereitung + bei großen Bewegungen</div>
+    <div class="when-tag">⏱ Vor jedem neuen Altcoin-Trade oder Investment</div>
 
     <div class="prompt-block">
       <div class="prompt-block-header">
-        <span class="prompt-label">Prompt — Weekly Crypto Market Read</span>
+        <span class="prompt-label">Prompt — Altcoin Research</span>
         <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
       </div>
-      <div class="prompt-text">Erstelle einen wöchentlichen Marktstruktur-Report für meine Krypto-Trading-Session.
+      <div class="prompt-text">Führe eine vollständige Due Diligence für folgenden Coin durch:
 
-Bitte recherchiere selbst die aktuellen Werte für:
-- BTC Preis & 7-Tage-Performance
-- BTC Dominance
-- Fear & Greed Index
-- Gesamtmarktkapitalisierung
-- Funding Rates (BTC, ETH)
-- Open Interest Veränderung (7 Tage)
-- Relevante Makro-Themen (Fed, Regulierung, ETF-Flows, große On-Chain Bewegungen)
+Coin: <span class="ph">[Name / Ticker]</span>
 
-Analysiere:
-1. Gesamtmarkt-Bias: Bullish / Bearish / Neutral — und warum
-2. BTC Dominance Trend: Was sagt das über Altcoin-Chancen aus?
-3. Funding Rate Interpretation: Sind Trader überhebelt long oder short?
-4. Risiko-Einschätzung: Wie aggressiv sollte ich diese Woche traden?
-5. Key Levels die ich im Auge behalten muss (BTC)
-6. Marktphase: Trending / Ranging / Volatile — was ist diese Woche wahrscheinlich?
+Recherchiere alle Informationen selbst und analysiere:
 
-Ausgabe: Strukturierter Report, klar und umsetzbar. Max. eine Seite.</div>
-    </div>
-
-    <div class="tip-box">
-      <strong>Warum das wichtig ist:</strong> Gegen den Gesamtmarkt-Bias zu traden ist wie gegen den Wind zu schwimmen. Dieser Report gibt dir in 5 Minuten das Lagebild das Profis täglich analysieren.
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- ── 05: ALTCOIN DUE DILIGENCE ── -->
-  <div class="practice">
-    <div class="section-title">Krypto · Practice 05</div>
-    <div class="practice-header">
-      <div class="practice-number">05</div>
-      <div class="practice-info">
-        <h2>Altcoin Research & Due Diligence</h2>
-        <div class="practice-desc">Bevor du in einen neuen Coin einsteigst — strukturiert recherchieren</div>
-      </div>
-    </div>
-
-    <div class="when-tag">⏱ Wann: Vor jedem neuen Altcoin-Trade oder Investment</div>
-
-    <div class="prompt-block">
-      <div class="prompt-block-header">
-        <span class="prompt-label">Prompt — Altcoin Due Diligence</span>
-        <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
-      </div>
-      <div class="prompt-text">Führe eine strukturierte Due Diligence für folgenden Altcoin durch:
-
-Coin: <span class="placeholder">[Name / Ticker]</span>
-
-Recherchiere alle weiteren Informationen selbst und analysiere:
-
-1. Fundamentals:
-   - Was macht dieses Projekt? (kurz, klar)
-   - Ist das Use Case real und skalierbar?
-   - Wer steht dahinter (Team, Investoren, Backing)?
+1. Fundamentals
+   - Was macht das Projekt? (kurz und klar)
+   - Ist der Use Case real und skalierbar?
+   - Team, Investoren, Backing?
    - Tokenomics: Inflation, Vesting, bevorstehende Unlock-Events?
 
-2. Marktstruktur & On-Chain:
+2. Marktstruktur
    - Aktueller Preis, Marktkapitalisierung, 24h Volumen
-   - Liquidität — kann ich problemlos ein- und aussteigen?
+   - Liquidität — problemloser Ein- und Ausstieg möglich?
    - Nächste wichtige Support & Resistance Levels
-   - Bevorstehende Events (Token-Unlock, Mainnet, Partnership)
+   - Bevorstehende Events (Unlock, Mainnet, Partnership)
 
-3. Sentiment & Narrativ:
+3. Sentiment & Narrativ
    - Passt der Coin zu einem aktuellen Krypto-Narrativ?
-   - Stimmung in der Community / auf Social Media?
+   - Stimmung in der Community und auf Social Media?
 
-4. Risiko-Einschätzung:
-   - Was sind die größten Risiken für diesen Trade?
+4. Risiko
+   - Größte Risiken für diesen Trade
    - Red Flags falls vorhanden
 
-5. Fazit:
+5. Fazit
    - Trade-würdig: Ja / Nein / Abwarten?
    - Wenn ja: Welcher Setup-Typ macht hier Sinn?</div>
     </div>
 
     <div class="tip-box">
-      <strong>Tipp:</strong> Nutze diesen Prompt auch um dich von einem schlechten Trade abzuhalten. Wenn Claude 3x „Abwarten" empfiehlt und du trotzdem einsteigen willst — frag dich warum.
+      <strong>Tipp:</strong> Nutze diesen Prompt auch um dich von einem schlechten Trade abzuhalten. Wenn die KI mehrfach „Abwarten" empfiehlt und du trotzdem einsteigen willst — frag dich warum.
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- ── 06: LIQUIDATION & FUNDING ── -->
+  <!-- ══════════════════════════════════════════
+       07 · WOCHENRÜCKBLICK
+  ══════════════════════════════════════════ -->
   <div class="practice">
-    <div class="section-title">Krypto · Practice 06</div>
-    <div class="practice-header">
-      <div class="practice-number">06</div>
-      <div class="practice-info">
-        <h2>Liquidation & Funding Rate Analyse</h2>
-        <div class="practice-desc">Verstehe wo der Markt geht bevor er sich bewegt</div>
-      </div>
-    </div>
-
-    <div class="when-tag">⏱ Wann: Bei starken Bewegungen oder vor größeren Positionen</div>
-
-    <div class="prompt-block">
-      <div class="prompt-block-header">
-        <span class="prompt-label">Prompt — Liquidation Map Interpretation</span>
-        <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
-      </div>
-      <div class="prompt-text">Hilf mir die aktuelle Marktlage für <span class="placeholder">[BTC / ETH / Symbol]</span> zu interpretieren.
-
-Recherchiere selbst die aktuellen Werte für:
-- Preis und letzte große Preisbewegung (24h)
-- Funding Rate (8h)
-- Open Interest und Trend
-- Long/Short Ratio
-- Größte Liquidation Cluster oberhalb und unterhalb des aktuellen Preises
-
-Analysiere:
-1. Was sagen Funding Rate + Open Interest über die Marktpositionierung aus?
-2. Welche Seite ist überhebelt (Longs oder Shorts)?
-3. Wo liegen die wahrscheinlichsten Liquidation Targets?
-4. Was ist das wahrscheinlichste nächste Preisziel basierend auf diesen Daten?
-5. Wie sollte ich das in meiner Positionsgröße berücksichtigen?
-
-Ausgabe: Klare Einschätzung mit konkreten Preis-Levels.</div>
-    </div>
-
-    <div class="tip-box">
-      <strong>Hinweis:</strong> Falls die KI keine Live-Daten abrufen kann, findest du Funding Rates und Liquidation Maps kostenlos auf <strong>coinglass.com</strong> — einfach die Zahlen kurz einfügen.
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- ── 07: WOCHENRÜCKBLICK ── -->
-  <div class="practice">
-    <div class="section-title">Krypto · Practice 07</div>
+    <div class="section-title">Practice 07</div>
     <div class="practice-header">
       <div class="practice-number">07</div>
       <div class="practice-info">
@@ -627,42 +645,40 @@ Ausgabe: Klare Einschätzung mit konkreten Preis-Levels.</div>
       </div>
     </div>
 
-    <div class="when-tag">⏱ Wann: Jeden Sonntag — 15 Minuten reichen</div>
+    <div class="when-tag">⏱ Jeden Sonntag · 15 Minuten reichen</div>
 
     <div class="prompt-block">
       <div class="prompt-block-header">
-        <span class="prompt-label">Prompt — Wöchentliche Trading-Reflexion</span>
+        <span class="prompt-label">Prompt — Wöchentliche Reflexion</span>
         <button class="copy-btn" onclick="copyPrompt(this)">Kopieren</button>
       </div>
-      <div class="prompt-text">Ich möchte meine Trading-Woche strukturiert reflektieren. Hilf mir dabei.
+      <div class="prompt-text">Ich möchte meine Trading-Woche strukturiert reflektieren.
 
-Woche: <span class="placeholder">[KW / Datum von – bis]</span>
+Woche: <span class="ph">[KW / Datum von – bis]</span>
+Anzahl Trades: <span class="ph">[Zahl]</span>
+Winner / Loser: <span class="ph">[X / Y]</span>
+Gesamt-PnL: <span class="ph">[Wert]</span>
+Bester Trade: <span class="ph">[kurze Beschreibung + PnL]</span>
+Schlechtester Trade: <span class="ph">[kurze Beschreibung + PnL]</span>
 
-Zahlen der Woche:
-- Anzahl Trades: <span class="placeholder">[Zahl]</span>
-- Winner / Loser: <span class="placeholder">[X / Y]</span>
-- Gesamt-PnL: <span class="placeholder">[Wert]</span>
-- Bester Trade: <span class="placeholder">[kurze Beschreibung + PnL]</span>
-- Schlechtester Trade: <span class="placeholder">[kurze Beschreibung + PnL]</span>
+Eigene Einschätzung:
+- Was lief gut: <span class="ph">[...]</span>
+- Was lief schlecht: <span class="ph">[...]</span>
+- Häufigste Regelbruch: <span class="ph">[...]</span>
+- Emotionslage (1–10): <span class="ph">[Wert + kurze Erklärung]</span>
 
-Meine eigene Einschätzung:
-- Was lief gut diese Woche: <span class="placeholder">[...]</span>
-- Was lief schlecht: <span class="placeholder">[...]</span>
-- Welche Regel habe ich am häufigsten gebrochen: <span class="placeholder">[...]</span>
-- Wie war meine Emotionslage (Skala 1–10): <span class="placeholder">[Wert + kurze Erklärung]</span>
-
-Mein Fokus der letzten Woche war: <span class="placeholder">[Was wolltest du verbessern?]</span>
-Habe ich das umgesetzt? <span class="placeholder">[Ja / Teilweise / Nein — warum?]</span>
+Mein Fokus der letzten Woche war: <span class="ph">[Was wolltest du verbessern?]</span>
+Umgesetzt? <span class="ph">[Ja / Teilweise / Nein — warum?]</span>
 
 Bitte:
-1. Strukturiere meine Reflexion und hebe die wichtigsten Muster hervor
-2. Bewerte ehrlich ob ich Fortschritte bei meinem Fokus gemacht habe
+1. Strukturiere meine Reflexion und hebe wichtige Muster hervor
+2. Bewerte ehrlich ob ich Fortschritte gemacht habe
 3. Definiere EINEN klaren Fokus für die kommende Woche
-4. Formuliere diesen Fokus als konkreten, messbaren Satz den ich täglich lesen kann</div>
+4. Formuliere ihn als messbaren Satz den ich täglich lesen kann</div>
     </div>
 
     <div class="tip-box">
-      <strong>Compound-Effekt:</strong> Wer 52 Wochen lang einen klaren wöchentlichen Fokus hat, verbessert sich schneller als jemand der jahrelang „irgendwie" tradet. Die Reflexion dauert 15 Minuten — der Impact ist dauerhaft.
+      <strong>Compound-Effekt:</strong> 52 Wochen mit einem klaren Fokus schlagen jahrelanges zielloses Traden. Die Reflexion dauert 15 Minuten — der Effekt ist dauerhaft.
     </div>
   </div>
 
@@ -674,17 +690,17 @@ Bitte:
     <div class="rule-card">
       <div class="rule-icon">🎯</div>
       <h4>Spezifität</h4>
-      <p>Vage Prompts = schlechte Ergebnisse. Spezifische Prompts = Gold. Je mehr Kontext, desto besser der Output.</p>
+      <p>Vage Prompts = schlechte Ergebnisse. Je mehr Kontext du gibst, desto besser der Output.</p>
     </div>
     <div class="rule-card">
       <div class="rule-icon">🔄</div>
       <h4>Iteration</h4>
-      <p>Der erste Entwurf ist fast nie perfekt. Verfeinern, testen, verbessern. Plane 2 Wochen für ein neues System ein.</p>
+      <p>Der erste Entwurf ist selten perfekt. Verfeinern, testen, verbessern — das ist der Prozess.</p>
     </div>
     <div class="rule-card">
       <div class="rule-icon">✅</div>
       <h4>Verifikation</h4>
-      <p>Niemals blind vertrauen. Alles testen und die Logik wirklich verstehen bevor du live gehst.</p>
+      <p>Niemals blind vertrauen. Logik verstehen und im Paper-Trading testen bevor du live gehst.</p>
     </div>
     <div class="rule-card">
       <div class="rule-icon">📋</div>
@@ -702,8 +718,7 @@ Bitte:
 <script>
   function copyPrompt(btn) {
     const block = btn.closest('.prompt-block');
-    const promptText = block.querySelector('.prompt-text');
-    const text = promptText.innerText;
+    const text = block.querySelector('.prompt-text').innerText;
     navigator.clipboard.writeText(text).then(() => {
       btn.textContent = 'Kopiert ✓';
       btn.classList.add('copied');
