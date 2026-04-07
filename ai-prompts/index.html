@@ -293,8 +293,8 @@
   </div>
 
   <div class="intro-box">
-    <p>Weniger als <strong>3% der Trader</strong> nutzen AI wirklich richtig. Der Unterschied liegt nicht in der Strategie — sondern in der operativen Effizienz. Diese Prompts geben dir dieselbe Infrastruktur, die früher nur Hedge Funds hatten.</p>
-    <p><strong>Wichtig:</strong> Nutze diese Prompts mit <strong>claude.ai</strong>. Passe alle <span style="color:var(--gold)">gelb markierten Felder</span> auf dein eigenes Setup an — je mehr Kontext du gibst, desto besser der Output.</p>
+    <p>Wir leben in einer Zeit in der Zugang zu Daten, Analysen und Wissen noch nie so einfach war. Wer diese Möglichkeiten richtig nutzt, hat einen echten Vorteil — gegenüber denen, die es nicht tun.</p>
+    <p>Die besten Ergebnisse erzielen wir mit <strong>Claude.ai</strong> oder <strong>Claude Code</strong> — du kannst aber auch andere KIs wie ChatGPT oder Gemini verwenden. Passe alle <span style="color:var(--gold)">gelb markierten Felder</span> auf dein eigenes Setup an. Felder ohne Markierung werden von der KI selbst recherchiert.</p>
   </div>
 
   <!-- ── 01: CUSTOM ALERTS ── -->
@@ -376,16 +376,15 @@ Code sauber, gut kommentiert und alle Parameter über Inputs anpassbar.</div>
 
 Watchlist: <span class="placeholder">[BTC, ETH, SOL, ...]</span>
 
-Aktuelle News/Katalysatoren:
-<span class="placeholder">[Relevante Schlagzeilen hier einfügen — aus deiner News-Quelle kopieren]</span>
-
-Marktdaten:
-<span class="placeholder">[Symbol | Preis | 24h % Change | Volumen | Key Levels — für jeden Titel]</span>
+Bitte recherchiere selbst:
+- Aktuelle Preise, 24h Performance und Handelsvolumen für jeden Titel
+- Relevante News und Katalysatoren der letzten 24 Stunden
+- Wichtige Support & Resistance Levels aus dem aktuellen Chart
 
 Für jeden Titel analysiere:
 - Katalysator oder News-Treiber (falls vorhanden)
 - Aktuelle Kursbewegung: Stärke, Schwäche, Volumen
-- Key Levels: Support & Resistance aus den obigen Daten
+- Key Levels: Support & Resistance
 - Setup-Potenzial: welche Muster könnten sich entwickeln
 - Priorität: Hoch / Mittel / Niedrig basierend auf Setup-Qualität und Katalysator-Stärke
 
@@ -395,7 +394,7 @@ Danach 2–3 Sätze allgemeiner Marktkontext.</div>
     </div>
 
     <div class="tip-box">
-      <strong>Tipp:</strong> Speichere diesen Prompt als Template. Täglich nur Watchlist, News und Marktdaten aktualisieren. Zeitaufwand: 5 Minuten statt 45–60 Minuten.
+      <strong>Tipp:</strong> Nur die Watchlist anpassen — den Rest übernimmt die KI. Zeitaufwand: unter 2 Minuten täglich.
     </div>
   </div>
 
@@ -490,14 +489,14 @@ Bitte:
       </div>
       <div class="prompt-text">Erstelle einen wöchentlichen Marktstruktur-Report für meine Krypto-Trading-Session.
 
-Aktuelle Daten (bitte selbst einfügen):
-- BTC Preis & 7-Tage-Performance: <span class="placeholder">[Preis | % Change]</span>
-- BTC Dominance: <span class="placeholder">[%]</span>
-- Fear & Greed Index: <span class="placeholder">[Wert + Label]</span>
-- Gesamtmarktkapitalisierung: <span class="placeholder">[Wert]</span>
-- Funding Rates (BTC, ETH): <span class="placeholder">[positiv / negativ / neutral]</span>
-- Open Interest Veränderung (7 Tage): <span class="placeholder">[gestiegen / gefallen]</span>
-- Aktuelle Makro-Themen: <span class="placeholder">[z.B. Fed-Entscheidung, regulatorische News, ETF-Flows]</span>
+Bitte recherchiere selbst die aktuellen Werte für:
+- BTC Preis & 7-Tage-Performance
+- BTC Dominance
+- Fear & Greed Index
+- Gesamtmarktkapitalisierung
+- Funding Rates (BTC, ETH)
+- Open Interest Veränderung (7 Tage)
+- Relevante Makro-Themen (Fed, Regulierung, ETF-Flows, große On-Chain Bewegungen)
 
 Analysiere:
 1. Gesamtmarkt-Bias: Bullish / Bearish / Neutral — und warum
@@ -505,7 +504,7 @@ Analysiere:
 3. Funding Rate Interpretation: Sind Trader überhebelt long oder short?
 4. Risiko-Einschätzung: Wie aggressiv sollte ich diese Woche traden?
 5. Key Levels die ich im Auge behalten muss (BTC)
-6. Mein Fokus für die Woche: Welche Marktphase (Trending / Ranging / Volatile) ist wahrscheinlich?
+6. Marktphase: Trending / Ranging / Volatile — was ist diese Woche wahrscheinlich?
 
 Ausgabe: Strukturierter Report, klar und umsetzbar. Max. eine Seite.</div>
     </div>
@@ -538,30 +537,28 @@ Ausgabe: Strukturierter Report, klar und umsetzbar. Max. eine Seite.</div>
       <div class="prompt-text">Führe eine strukturierte Due Diligence für folgenden Altcoin durch:
 
 Coin: <span class="placeholder">[Name / Ticker]</span>
-Aktueller Preis: <span class="placeholder">[Preis in USD]</span>
-Marktkapitalisierung: <span class="placeholder">[Wert]</span>
-Warum bin ich auf diesen Coin aufmerksam geworden: <span class="placeholder">[Catalyst / Chart / News]</span>
 
-Analysiere folgende Bereiche:
+Recherchiere alle weiteren Informationen selbst und analysiere:
 
 1. Fundamentals:
    - Was macht dieses Projekt? (kurz, klar)
    - Ist das Use Case real und skalierbar?
-   - Wer steht dahinter (Team, Investoren)?
-   - Tokenomics: Gibt es Inflation, Vesting, Unlock-Events?
+   - Wer steht dahinter (Team, Investoren, Backing)?
+   - Tokenomics: Inflation, Vesting, bevorstehende Unlock-Events?
 
-2. On-Chain & Marktstruktur:
-   - Liquidität und Handelsvolumen — kann ich problemlos ein- und aussteigen?
-   - Wo liegen die nächsten wichtigen Support & Resistance Levels?
-   - Steht ein Token-Unlock oder major Event bevor?
+2. Marktstruktur & On-Chain:
+   - Aktueller Preis, Marktkapitalisierung, 24h Volumen
+   - Liquidität — kann ich problemlos ein- und aussteigen?
+   - Nächste wichtige Support & Resistance Levels
+   - Bevorstehende Events (Token-Unlock, Mainnet, Partnership)
 
 3. Sentiment & Narrativ:
    - Passt der Coin zu einem aktuellen Krypto-Narrativ?
-   - Was sagt die Community / Social Media?
+   - Stimmung in der Community / auf Social Media?
 
 4. Risiko-Einschätzung:
    - Was sind die größten Risiken für diesen Trade?
-   - Was ist mein maximales Risiko in % des Portfolios?
+   - Red Flags falls vorhanden
 
 5. Fazit:
    - Trade-würdig: Ja / Nein / Abwarten?
@@ -595,13 +592,12 @@ Analysiere folgende Bereiche:
       </div>
       <div class="prompt-text">Hilf mir die aktuelle Marktlage für <span class="placeholder">[BTC / ETH / Symbol]</span> zu interpretieren.
 
-Aktuelle Daten:
-- Preis: <span class="placeholder">[aktueller Preis]</span>
-- Funding Rate (8h): <span class="placeholder">[Wert — z.B. +0.03%]</span>
-- Open Interest: <span class="placeholder">[Wert + Trend: gestiegen/gefallen]</span>
-- Größte Liquidation Cluster laut Coinglass: <span class="placeholder">[Level oberhalb: X$ | Level unterhalb: Y$]</span>
-- Long/Short Ratio: <span class="placeholder">[Wert]</span>
-- Letzte große Preisbewegung: <span class="placeholder">[z.B. "+5% in 2h" oder "Seitwärts seit 3 Tagen"]</span>
+Recherchiere selbst die aktuellen Werte für:
+- Preis und letzte große Preisbewegung (24h)
+- Funding Rate (8h)
+- Open Interest und Trend
+- Long/Short Ratio
+- Größte Liquidation Cluster oberhalb und unterhalb des aktuellen Preises
 
 Analysiere:
 1. Was sagen Funding Rate + Open Interest über die Marktpositionierung aus?
@@ -614,7 +610,7 @@ Ausgabe: Klare Einschätzung mit konkreten Preis-Levels.</div>
     </div>
 
     <div class="tip-box">
-      <strong>Datenquelle:</strong> Funding Rates und Liquidation Maps findest du kostenlos auf <strong>coinglass.com</strong>. Einfach die Zahlen kopieren und in den Prompt einfügen.
+      <strong>Hinweis:</strong> Falls die KI keine Live-Daten abrufen kann, findest du Funding Rates und Liquidation Maps kostenlos auf <strong>coinglass.com</strong> — einfach die Zahlen kurz einfügen.
     </div>
   </div>
 
